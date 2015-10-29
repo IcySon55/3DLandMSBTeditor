@@ -142,5 +142,26 @@ namespace _3DlandMSBTeditor
             Strings[listBox1.SelectedIndex].Clear();
             Strings[listBox1.SelectedIndex].AddRange(System.Text.Encoding.Unicode.GetBytes(textBox1.Text));
         }
+
+        private void version01ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Version 0.1\r\nBy Exelix11");
+        }
+
+        private void compressToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog load = new OpenFileDialog();
+            if (load.ShowDialog() != DialogResult.OK) return;
+            YATA.dsdecmp.Compress(load.FileName, load.FileName + ".lz");
+            MessageBox.Show("Done");
+        }
+
+        private void decompressToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog load = new OpenFileDialog();
+            if (load.ShowDialog() != DialogResult.OK) return;
+            YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
+            MessageBox.Show("Done");
+        }
     }
 }
