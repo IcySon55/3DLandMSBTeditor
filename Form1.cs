@@ -15,6 +15,8 @@ namespace _3DlandMSBTeditor
     public partial class Form1 : Form
     {
         List<List<byte>> Strings = new List<List<byte>>();
+        List<string> Names = new List<string>();
+        List<int> addressList = new List<int>();
         string LoadedFile = "";
         public Form1()
         {
@@ -24,10 +26,12 @@ namespace _3DlandMSBTeditor
         void loadFile(string file)
         {
             Strings.Clear();
+            addressList.Clear();
             listBox1.Items.Clear();
             byte[] byteBuffer = File.ReadAllBytes(file);
             string byteBufferAsString = System.Text.Encoding.UTF8.GetString(byteBuffer);
             int base_offset = byteBufferAsString.IndexOf("TXT2");
+            #region ReadStrings
             base_offset += 4;
             BinaryReader bin = new BinaryReader(File.Open(file, FileMode.Open));
             bin.BaseStream.Position = base_offset;
@@ -35,7 +39,6 @@ namespace _3DlandMSBTeditor
             bin.BaseStream.Position += 8;
             long countpos = bin.BaseStream.Position;
             int count = bin.ReadInt32();
-            List<int> addressList = new List<int>();
             for (int i = 0; i < count; i++)
             {
                 addressList.Add(bin.ReadInt32());
@@ -59,9 +62,22 @@ namespace _3DlandMSBTeditor
                     }
                 }
                 Strings.Add(String);
-            }
-            for (int i = 0; i < Strings.Count; i++) listBox1.Items.Add(i);
+            }            
             LoadedFile = file;
+            #endregion
+            #region ReadNames
+            base_offset = byteBufferAsString.IndexOf("LBL1");
+            bin.BaseStream.Position = base_offset + 4;            
+            int end = bin.ReadInt32();
+            bin.BaseStream.Position += 16;
+            bin.BaseStream.Position = bin.ReadUInt32() + base_offset + 16;
+            for (int i = 0; i < count; i++)
+            {
+                Names.Add(Encoding.UTF8.GetString(bin.ReadBytes(Convert.ToInt32(bin.ReadByte()))));
+                bin.BaseStream.Position += 4;
+            }
+            listBox1.Items.AddRange(Names.ToArray());
+            #endregion
             bin.Close();
         }
 
@@ -124,10 +140,32 @@ namespace _3DlandMSBTeditor
             if (load.ShowDialog() != DialogResult.OK) return;
             loadFile(load.FileName);
         }
+        bool CanChange = false;
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            textBox1.Text = System.Text.Encoding.Unicode.GetString(Strings[listBox1.SelectedIndex].ToArray());
+            CanChange = false;
+            textBox1.Text = FromBytesToText(Strings[listBox1.SelectedIndex].ToArray());
+            lbl_addr.Text = "Selected string decimal address (from TXT2 addr + 16): " + addressList[listBox1.SelectedIndex].ToString() ;
+            CanChange = true;
+        }
+
+        private string FromBytesToText(byte[] bytes)
+        {
+            string res = "";
+            #region FIND0A
+            List<int> positions = new List<int>();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                if (bytes[i] == 10) positions.Add(i);
+            }
+            #endregion
+            res = System.Text.Encoding.Unicode.GetString(bytes);
+            for (int i = 0; i < positions.Count; i++)
+            {
+                res = res.Insert(positions[i]/2 + 2*i, Environment.NewLine);
+            }
+            return res;
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -136,11 +174,67 @@ namespace _3DlandMSBTeditor
             if (Save.ShowDialog() != DialogResult.OK) return;
             WriteFile(Save.FileName);
         }
-
+        
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            Strings[listBox1.SelectedIndex].Clear();
-            Strings[listBox1.SelectedIndex].AddRange(System.Text.Encoding.Unicode.GetBytes(textBox1.Text));
+            if (CanChange)
+            {
+                Strings[listBox1.SelectedIndex].Clear();
+                string sav = textBox1.Text.Trim();
+                #region TESTCODE
+                /*
+                List<int> indexes = new List<int>();
+                string save = sav;
+                for (int index = 0; ; index += Environment.NewLine.Length)
+                {
+                    index = sav.IndexOf(Environment.NewLine, index);
+                    if (index == -1) break;
+                    indexes.Add(index);
+                    save = save.Remove(index - indexes.Count , 1);
+                }
+                Debug.Print(save);
+                Debug.Print("COUNT: "+indexes.Count.ToString());
+                for (int i = 0; i < indexes.Count; i++) Debug.Print(i.ToString() + ": " + indexes[i].ToString());
+                List<Byte> array = new List<Byte>();
+                array.AddRange(System.Text.Encoding.Unicode.GetBytes(save));
+                string arr = "";
+                for (int i = 0; i < array.Count; i++) arr = arr + " " + array[i].ToString();
+                Debug.Print(arr);
+
+                for (int i = 0; i < indexes.Count; i++) array[indexes[i] * 2 - i*2] = 10;
+
+                Strings[listBox1.SelectedIndex].AddRange(array);
+                arr = "";
+                for (int i = 0; i < array.Count; i++) arr = arr + " " + array[i].ToString();
+                Debug.Print(arr);*/
+                #endregion
+                for (int i = 0; i < sav.Length; i++)
+                {
+                    int res = GetBytes(sav[i]);
+                    if (res != -1)
+                    {
+                        Strings[listBox1.SelectedIndex].Add((byte)res);
+                        Strings[listBox1.SelectedIndex].Add(0);
+                    }
+                }
+                string arpr = "";
+                for (int i = 0; i < Strings[listBox1.SelectedIndex].Count; i++) arpr = arpr + " " + Strings[listBox1.SelectedIndex][i].ToString();
+                Debug.Print(arpr);
+            }
+        }
+
+        int newlinecount = 0;
+        int GetBytes(char str)
+        {
+            byte[] bytes = new byte[1];
+            System.Buffer.BlockCopy(new char[1] { str }, 0, bytes, 0, bytes.Length);
+            if (bytes[0] == 13) bytes[0]= 10;
+            if (bytes[0] == 10)
+            {
+                if (newlinecount != 0) { newlinecount = 0; return -1; }
+                newlinecount++;
+            }
+            return bytes[0];
         }
 
         private void version01ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -162,6 +256,11 @@ namespace _3DlandMSBTeditor
             if (load.ShowDialog() != DialogResult.OK) return;
             YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
             MessageBox.Show("Done");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
