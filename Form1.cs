@@ -17,10 +17,15 @@ namespace _3DlandMSBTeditor
         List<List<byte>> Strings = new List<List<byte>>();
         List<string> Names = new List<string>();
         List<int> addressList = new List<int>();
+        List<int> CorrectStringID = new List<int>();
+        int ExtraEmptyData = 0;
         string LoadedFile = "";
-        public Form1()
+        int editingIndex = 0;
+
+        public Form1(string[] args)
         {
             InitializeComponent();
+            if (args.Length > 0) loadFile(args[0]);
         }
 
         void loadFile(string file)
@@ -28,8 +33,30 @@ namespace _3DlandMSBTeditor
             Strings.Clear();
             addressList.Clear();
             listBox1.Items.Clear();
+            Names.Clear();
+            addressList.Clear();
+            editingIndex = 0;
+            ExtraEmptyData = 0;
+            CorrectStringID.Clear();
+            textBox1.Enabled = true;
+            listBox1.Enabled = true;
             byte[] byteBuffer = File.ReadAllBytes(file);
             string byteBufferAsString = System.Text.Encoding.UTF8.GetString(byteBuffer);
+            if (!byteBufferAsString.StartsWith("Msg"))
+            {
+                MessageBox.Show("Not a valid MSBT file !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Strings.Clear();
+                addressList.Clear();
+                listBox1.Items.Clear();
+                Names.Clear();
+                addressList.Clear();
+                editingIndex = 0;
+                ExtraEmptyData = 0;
+                CorrectStringID.Clear();
+                textBox1.Enabled = false;
+                listBox1.Enabled = false;
+                return;
+            }
             int base_offset = byteBufferAsString.IndexOf("TXT2");
             #region ReadStrings
             base_offset += 4;
@@ -51,7 +78,8 @@ namespace _3DlandMSBTeditor
                 bool FindNULL = false;
                 while (!FindNULL)
                 {
-                    try {
+                    try
+                    {
                         byte[] temp = bin.ReadBytes(2);
                         Debug.Print(temp[0].ToString() + " " + temp[1].ToString());
                         if (IsNull(temp)) FindNULL = true; else String.AddRange(temp);
@@ -62,7 +90,12 @@ namespace _3DlandMSBTeditor
                     }
                 }
                 Strings.Add(String);
-            }            
+            }
+            for (int i = 0; i < 16; i++)
+            {
+                if ((bin.BaseStream.Position + 1) <= bin.BaseStream.Length && bin.ReadByte() == 0xAB) ExtraEmptyData++; else break;
+            }
+            label4.Text = "Strings in the file: " + count.ToString();
             LoadedFile = file;
             #endregion
             #region ReadNames
@@ -74,11 +107,12 @@ namespace _3DlandMSBTeditor
             for (int i = 0; i < count; i++)
             {
                 Names.Add(Encoding.UTF8.GetString(bin.ReadBytes(Convert.ToInt32(bin.ReadByte()))));
-                bin.BaseStream.Position += 4;
+                CorrectStringID.Add(bin.ReadInt32());
             }
             listBox1.Items.AddRange(Names.ToArray());
             #endregion
             bin.Close();
+            listBox1.SelectedItem = 0;
         }
 
         void WriteFile(string file)
@@ -110,7 +144,9 @@ namespace _3DlandMSBTeditor
                 bin.Write(Pos[i]);
             }
             bin.BaseStream.Position = SectionSizePos;
-            bin.Write(bin.BaseStream.Length - CountPos);
+            bin.Write(bin.BaseStream.Length - CountPos - ExtraEmptyData);
+            bin.BaseStream.Position = 18; 
+            bin.Write(bin.BaseStream.Length);
             bin.Flush();
             bin.Close();
         }
@@ -145,10 +181,19 @@ namespace _3DlandMSBTeditor
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             CanChange = false;
-            textBox1.Text = FromBytesToText(Strings[listBox1.SelectedIndex].ToArray());
-            lbl_addr.Text = "Selected string decimal address (from TXT2 addr + 16): " + addressList[listBox1.SelectedIndex].ToString() ;
+            editingIndex = CorrectStringID[Names.FindIndex(x => x == listBox1.SelectedItem.ToString())];
+            textBox1.Text = FromBytesToText(Strings[editingIndex].ToArray());
+            UpdateDECview();
+            lbl_addr.Text = "Selected string decimal address (from TXT2 addr + 16): " + addressList[editingIndex].ToString() ;
             CanChange = true;
         }
+        
+        void UpdateDECview()
+        {
+            string data = "";
+            for (int i = 0; i < Strings[editingIndex].Count; i++) data = data + " " + Strings[editingIndex][i].ToString();
+            DecEditTextbox.Text = data;
+        }        
 
         private string FromBytesToText(byte[] bytes)
         {
@@ -179,7 +224,7 @@ namespace _3DlandMSBTeditor
         {
             if (CanChange)
             {
-                Strings[listBox1.SelectedIndex].Clear();
+                Strings[editingIndex].Clear();
                 string sav = textBox1.Text.Trim();
                 #region TESTCODE
                 /*
@@ -203,7 +248,7 @@ namespace _3DlandMSBTeditor
 
                 for (int i = 0; i < indexes.Count; i++) array[indexes[i] * 2 - i*2] = 10;
 
-                Strings[listBox1.SelectedIndex].AddRange(array);
+                Strings[listBox1.editingIndex].AddRange(array);
                 arr = "";
                 for (int i = 0; i < array.Count; i++) arr = arr + " " + array[i].ToString();
                 Debug.Print(arr);*/
@@ -213,13 +258,14 @@ namespace _3DlandMSBTeditor
                     int res = GetBytes(sav[i]);
                     if (res != -1)
                     {
-                        Strings[listBox1.SelectedIndex].Add((byte)res);
-                        Strings[listBox1.SelectedIndex].Add(0);
+                        Strings[editingIndex].Add((byte)res);
+                        Strings[editingIndex].Add(0);
                     }
                 }
                 string arpr = "";
-                for (int i = 0; i < Strings[listBox1.SelectedIndex].Count; i++) arpr = arpr + " " + Strings[listBox1.SelectedIndex][i].ToString();
+                for (int i = 0; i < Strings[editingIndex].Count; i++) arpr = arpr + " " + Strings[editingIndex][i].ToString();
                 Debug.Print(arpr);
+                UpdateDECview();
             }
         }
 
@@ -239,7 +285,7 @@ namespace _3DlandMSBTeditor
 
         private void version01ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Version 0.1\r\nBy Exelix11");
+            MessageBox.Show("Version 0.2\r\nBy Exelix11");
         }
 
         private void compressToolStripMenuItem_Click(object sender, EventArgs e)
@@ -261,6 +307,17 @@ namespace _3DlandMSBTeditor
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void Form_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void Form_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            loadFile(files[0]);
         }
     }
 }
