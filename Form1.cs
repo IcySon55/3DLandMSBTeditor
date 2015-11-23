@@ -21,6 +21,8 @@ namespace _3DlandMSBTeditor
         int ExtraEmptyData = 0;
         string LoadedFile = "";
         int editingIndex = 0;
+        bool Found_LBL1;
+        int txt2addr = -1;
 
         public Form1(string[] args)
         {
@@ -58,6 +60,7 @@ namespace _3DlandMSBTeditor
                 return;
             }
             int base_offset = byteBufferAsString.IndexOf("TXT2");
+            txt2addr = base_offset;
             #region ReadStrings
             base_offset += 4;
             BinaryReader bin = new BinaryReader(File.Open(file, FileMode.Open));
@@ -100,16 +103,33 @@ namespace _3DlandMSBTeditor
             #endregion
             #region ReadNames
             base_offset = byteBufferAsString.IndexOf("LBL1");
-            bin.BaseStream.Position = base_offset + 4;            
-            int end = bin.ReadInt32();
-            bin.BaseStream.Position += 16;
-            bin.BaseStream.Position = bin.ReadUInt32() + base_offset + 16;
-            for (int i = 0; i < count; i++)
+            if (base_offset != -1)
             {
-                Names.Add(Encoding.UTF8.GetString(bin.ReadBytes(Convert.ToInt32(bin.ReadByte()))));
-                CorrectStringID.Add(bin.ReadInt32());
+                Found_LBL1 = true;
+                listBox1.Sorted = true;
+                bin.BaseStream.Position = base_offset + 4;
+                int end = bin.ReadInt32();
+                bin.BaseStream.Position += 16;
+                bin.BaseStream.Position = bin.ReadUInt32() + base_offset + 16;
+                for (int i = 0; i < count; i++)
+                {
+                    Names.Add(Encoding.UTF8.GetString(bin.ReadBytes(Convert.ToInt32(bin.ReadByte()))));
+                    CorrectStringID.Add(bin.ReadInt32());
+                }
+                listBox1.Items.AddRange(Names.ToArray());
             }
-            listBox1.Items.AddRange(Names.ToArray());
+            else
+            {
+                MessageBox.Show("This file doesn't have the LBL1 section, strings names are missing");
+                Found_LBL1 = false;
+                listBox1.Sorted = false;
+                List<string> list = new List<string>();
+                for (int i = 0; i < count; i++)
+                {
+                    list.Add(i.ToString());
+                }
+                listBox1.Items.AddRange(list.ToArray());
+            }
             #endregion
             bin.Close();
             listBox1.SelectedItem = 0;
@@ -181,17 +201,24 @@ namespace _3DlandMSBTeditor
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             CanChange = false;
-            editingIndex = CorrectStringID[Names.FindIndex(x => x == listBox1.SelectedItem.ToString())];
+            if (Found_LBL1)
+            {
+                editingIndex = CorrectStringID[Names.FindIndex(x => x == listBox1.SelectedItem.ToString())];
+            }
+            else
+            {
+                editingIndex = listBox1.SelectedIndex;
+            }
             textBox1.Text = FromBytesToText(Strings[editingIndex].ToArray());
             UpdateDECview();
-            lbl_addr.Text = "Selected string decimal address (from TXT2 addr + 16): " + addressList[editingIndex].ToString() ;
+            lbl_addr.Text = "Selected string address: " + valueConverter(txt2addr + 16 + addressList[editingIndex]);
             CanChange = true;
         }
         
         void UpdateDECview()
         {
             string data = "";
-            for (int i = 0; i < Strings[editingIndex].Count; i++) data = data + " " + Strings[editingIndex][i].ToString();
+            for (int i = 0; i < Strings[editingIndex].Count; i++) data = data + " " + valueConverter(Strings[editingIndex][i]);
             DecEditTextbox.Text = data;
         }        
 
@@ -285,7 +312,7 @@ namespace _3DlandMSBTeditor
 
         private void version01ToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Version 0.2\r\nBy Exelix11");
+            MessageBox.Show("Version 0.3\r\nBy Exelix11");
         }
 
         private void compressToolStripMenuItem_Click(object sender, EventArgs e)
@@ -318,6 +345,16 @@ namespace _3DlandMSBTeditor
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             loadFile(files[0]);
+        }
+
+        int valueConverter(string HexNum)
+        {
+            return int.Parse(HexNum, System.Globalization.NumberStyles.HexNumber);
+        }
+
+        string valueConverter(int IntNum)
+        {
+            return IntNum.ToString("X");
         }
     }
 }
