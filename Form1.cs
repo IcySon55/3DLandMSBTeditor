@@ -43,7 +43,7 @@ namespace _3DlandMSBTeditor
             textBox1.Enabled = true;
             listBox1.Enabled = true;
             byte[] byteBuffer = File.ReadAllBytes(file);
-            string byteBufferAsString = System.Text.Encoding.UTF8.GetString(byteBuffer);
+            string byteBufferAsString = System.Text.Encoding.ASCII.GetString(byteBuffer);
             if (!byteBufferAsString.StartsWith("Msg"))
             {
                 MessageBox.Show("Not a valid MSBT file !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
