@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace _3DlandMSBTeditor
+namespace MsbtEditor
 {
 	static class Program
 	{
@@ -17,7 +17,7 @@ namespace _3DlandMSBTeditor
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new Form1(args));
+			Application.Run(new frmMain(args));
 		}
 	}
 }

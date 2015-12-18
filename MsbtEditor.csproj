@@ -1,5 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ApplicationIcon>images\msbteditor.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>MsbtEditor.Program</StartupObject>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,8 +13,8 @@
     <ProjectGuid>{1A356209-8300-4B5E-8338-99E80E388CEF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>_3DlandMSBTeditor</RootNamespace>
-    <AssemblyName>3DlandMSBTeditor</AssemblyName>
+    <RootNamespace>MsbtEditor</RootNamespace>
+    <AssemblyName>MsbtEditor</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -50,18 +56,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="frmMain.Designer.cs">
+      <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="LZ11.cs" />
     <Compile Include="MSBT.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="frmMain.resx">
+      <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -88,6 +94,27 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Be.Windows.Forms.HexBox.dll" />
+    <Content Include="images\menu-about.png" />
+    <Content Include="images\menu-add.png" />
+    <Content Include="images\menu-copy.png" />
+    <Content Include="images\menu-delete.png" />
+    <Content Include="images\menu-down.png" />
+    <Content Include="images\menu-exit.png" />
+    <Content Include="images\menu-export.png" />
+    <Content Include="images\menu-field-properties.png" />
+    <Content Include="images\menu-new.png" />
+    <Content Include="images\menu-open.png" />
+    <Content Include="images\menu-paste.png" />
+    <Content Include="images\menu-save-as.png" />
+    <Content Include="images\menu-save.png" />
+    <Content Include="images\menu-up.png" />
+    <Content Include="images\msbteditor.ico" />
+    <Content Include="images\tab-class.png" />
+    <Content Include="images\tab-database.png" />
+    <Content Include="images\tab-form.png" />
+    <Content Include="images\tab-general.png" />
+    <Content Include="images\tab-list.png" />
+    <Content Include="images\tab-validation.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
