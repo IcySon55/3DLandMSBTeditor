@@ -129,6 +129,8 @@ namespace MsbtEditor
 				_hasChanges = false;
 				LoadFile();
 				UpdateForm();
+				Settings.Default.InitialDirectory = new DirectoryInfo(filename).FullName;
+				Settings.Default.Save();
 			}
 			else
 			{
@@ -161,16 +163,18 @@ namespace MsbtEditor
 
 			if (_msbt.LBL1.Labels.Count > 0)
 			{
-				for (int i = 0; i < _msbt.LBL1.Labels.Count; i++)
+				lstStrings.Sorted = true;
+				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
 				{
 					lstStrings.Items.Add(_msbt.LBL1.Labels[i]);
 				}
 			}
 			else
 			{
+				lstStrings.Sorted = false;
 				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
 				{
-					lstStrings.Items.Add(_msbt.TXT2.Values[i]);
+					lstStrings.Items.Add(_msbt.TXT2.Entries[i]);
 				}
 			}
 
@@ -210,27 +214,24 @@ namespace MsbtEditor
 
 		private void lstStrings_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Label label = (Label)lstStrings.SelectedItem;
+			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Values[(int)label.ID].Text).Replace("\n", "\r\n");
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalValues[(int)label.ID].Text).Replace("\n", "\r\n");
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Value).Replace("\n", "\r\n");
+			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Value).Replace("\n", "\r\n");
 
 			UpdateHexView();
 
 			// TODO: show string info
 		}
 
-		private void txtEdit_TextChanged(object sender, EventArgs e)
+		private void txtEdit_KeyUp(object sender, EventArgs e)
 		{
-			string result = txtEdit.Text.Trim();
+			string result = txtEdit.Text;
 
-			Label label = (Label)lstStrings.SelectedItem;
-			_msbt.TXT2.Values[label.ID].Text = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
+			Entry entry = (Entry)lstStrings.SelectedItem;
+			_msbt.TXT2.Entries[entry.ID].Value = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
 
-			_updateText = false;
-			if (_updateHex)
-				UpdateHexView();
-			_updateText = true;
+			UpdateHexView();
 		}
 
 		private void UpdateHexView()
@@ -239,8 +240,8 @@ namespace MsbtEditor
 
 			try
 			{
-				Label label = (Label)lstStrings.SelectedItem;
-				MemoryStream strm = new MemoryStream(_msbt.TXT2.Values[(int)label.ID].Text);
+				Entry entry = (Entry)lstStrings.SelectedItem;
+				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Value);
 
 				dfbp = new DynamicFileByteProvider(strm);
 				dfbp.Changed += new EventHandler(byteProvider_Changed);
@@ -255,16 +256,13 @@ namespace MsbtEditor
 		{
 			DynamicFileByteProvider dfbp = (DynamicFileByteProvider)sender;
 
-			Label label = (Label)lstStrings.SelectedItem;
+			Entry entry = (Entry)lstStrings.SelectedItem;
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));
-			_msbt.TXT2.Values[label.ID].Text = bytes.ToArray();
+			_msbt.TXT2.Entries[entry.ID].Value = bytes.ToArray();
 
-			_updateHex = false;
-			if (_updateText)
-				txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Values[(int)label.ID].Text);
-			_updateHex = true;
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Value);
 		}
 
 		// Utilities

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Diagnostics;
 
 namespace MsbtEditor
 {
@@ -15,37 +16,32 @@ namespace MsbtEditor
 		public UInt16 Unknown2; // Always 0x0103
 		public UInt16 NumberOfSections;
 		public UInt16 Unknown3; // Always 0x0000
+		public UInt32 FileSizeOffset;
 		public UInt32 FileSize;
 		public byte[] Unknown4; // Always 0x0000 0000 0000 0000 0000
 	}
 
 	class LBL1
 	{
-		public long Offset;
 		public byte[] Identifier; // LBL1
 		public UInt32 SectionSize; // Begins after Unknown1
 		public byte[] Unknown1; // Always 0x0000 0000
 		public byte[] Unknown2;
 		public byte[] Unknown3; // Large collection of unknown values
 
-		public List<Label> Labels;
+		public List<Entry> Labels;
 	}
 
-	class Label
+	class NLI1
 	{
-		public UInt32 Length;
-		public byte[] Value;
-		public Int32 ID;
-
-		public override string ToString()
-		{
-			return Encoding.ASCII.GetString(Value);
-		}
+		public byte[] Identifier; // NLI1
+		public UInt32 SectionSize; // Begins after Unknown1
+		public byte[] Unknown1; // Always 0x0000 0000
+		public byte[] Unknown2; // Tons of unknown data
 	}
 
 	class ATR1
 	{
-		public long Offset;
 		public byte[] Identifier; // ATR1
 		public UInt32 SectionSize; // Begins after Unknown1
 		public byte[] Unknown1; // Always 0x0000 0000
@@ -54,24 +50,25 @@ namespace MsbtEditor
 
 	class TXT2
 	{
-		public long Offset;
 		public byte[] Identifier; // TXT2
 		public UInt32 SectionSize; // Begins after Unknown1
 		public byte[] Unknown1; // Always 0x0000 0000
 		public UInt32 NumberOfStrings;
 
-		public List<Value> OriginalValues;
-		public List<Value> Values;
+		public List<Entry> OriginalEntries;
+		public List<Entry> Entries;
 	}
 
-	class Value
+	class Entry
 	{
-		public byte[] Text;
+		public UInt32 Length;
+		public List<byte[]> Controls;
+		public byte[] Value;
 		public Int32 ID;
 
 		public override string ToString()
 		{
-			return ID.ToString();
+			return (Length > 0 ? Encoding.ASCII.GetString(Value) : (ID + 1).ToString());
 		}
 	}
 
@@ -81,6 +78,7 @@ namespace MsbtEditor
 
 		public Header Header = new Header();
 		public LBL1 LBL1 = new LBL1();
+		public NLI1 NLI1 = new NLI1();
 		public ATR1 ATR1 = new ATR1();
 		public TXT2 TXT2 = new TXT2();
 		public List<string> SectionOrder = new List<string>();
@@ -96,6 +94,11 @@ namespace MsbtEditor
 				FileStream fs = System.IO.File.Open(File.FullName, FileMode.Open, FileAccess.Read, FileShare.None);
 				BinaryReader br = new BinaryReader(fs);
 
+				// Initialize Members
+				LBL1.Labels = new List<Entry>();
+				TXT2.OriginalEntries = new List<Entry>();
+				TXT2.Entries = new List<Entry>();
+
 				// Header
 				Header.Identifier = br.ReadBytes(8);
 				if (Encoding.ASCII.GetString(Header.Identifier) != "MsgStdBn")
@@ -105,6 +108,7 @@ namespace MsbtEditor
 				Header.Unknown2 = br.ReadUInt16();
 				Header.NumberOfSections = br.ReadUInt16();
 				Header.Unknown3 = br.ReadUInt16();
+				Header.FileSizeOffset = (UInt32)br.BaseStream.Position;
 				Header.FileSize = br.ReadUInt32();
 				Header.Unknown4 = br.ReadBytes(10);
 
@@ -112,17 +116,22 @@ namespace MsbtEditor
 				for (int i = 0; i < Header.NumberOfSections; i++)
 				{
 					// Section Detection
-					if (br.PeekChar() == 'L')
+					if (PeekString(ref br, 4) == "LBL1")
 					{
 						ReadLBL1(ref br);
 						SectionOrder.Add("LBL1");
 					}
-					else if (br.PeekChar() == 'A')
+					else if (PeekString(ref br, 4) == "NLI1")
+					{
+						ReadNLI1(ref br);
+						SectionOrder.Add("NLI1");
+					}
+					else if (PeekString(ref br, 4) == "ATR1")
 					{
 						ReadATR1(ref br);
 						SectionOrder.Add("ATR1");
 					}
-					else if (br.PeekChar() == 'T')
+					else if (PeekString(ref br, 4) == "TXT2")
 					{
 						ReadTXT2(ref br);
 						SectionOrder.Add("TXT2");
@@ -133,21 +142,33 @@ namespace MsbtEditor
 			}
 		}
 
+		private string PeekString(ref BinaryReader br, int length)
+		{
+			List<byte> bytes = new List<byte>();
+			long startOffset = br.BaseStream.Position;
+
+			for (int i = 0; i < length; i++)
+				bytes.Add(br.ReadByte());
+
+			br.BaseStream.Seek(startOffset, SeekOrigin.Begin);
+
+			return Encoding.ASCII.GetString(bytes.ToArray());
+		}
+
 		private void ReadLBL1(ref BinaryReader br)
 		{
-			LBL1.Offset = br.BaseStream.Position;
+			long offset = br.BaseStream.Position;
 			LBL1.Identifier = br.ReadBytes(4);
 			LBL1.SectionSize = br.ReadUInt32();
 			LBL1.Unknown1 = br.ReadBytes(8);
 			LBL1.Unknown2 = br.ReadBytes(8);
-			uint startOfLabels = br.ReadUInt32() + (uint)LBL1.Offset + (uint)LBL1.Unknown1.Length + (uint)LBL1.Unknown2.Length;
+			uint startOfLabels = br.ReadUInt32() + (uint)offset + (uint)LBL1.Unknown1.Length + (uint)LBL1.Unknown2.Length;
 			br.BaseStream.Seek(-sizeof(UInt32), SeekOrigin.Current);
 			LBL1.Unknown3 = br.ReadBytes((int)startOfLabels - (int)br.BaseStream.Position);
 
-			LBL1.Labels = new List<Label>();
-			while (br.BaseStream.Position < (LBL1.Offset + LBL1.Identifier.Length + sizeof(UInt32) + LBL1.Unknown1.Length + LBL1.SectionSize))
+			while (br.BaseStream.Position < (offset + LBL1.Identifier.Length + sizeof(UInt32) + LBL1.Unknown1.Length + LBL1.SectionSize))
 			{
-				Label lbl = new Label();
+				Entry lbl = new Entry();
 				lbl.Length = Convert.ToUInt32(br.ReadByte());
 				lbl.Value = br.ReadBytes((int)lbl.Length);
 				lbl.ID = br.ReadInt32();
@@ -157,9 +178,18 @@ namespace MsbtEditor
 			PaddingSeek(ref br);
 		}
 
+		private void ReadNLI1(ref BinaryReader br)
+		{
+			NLI1.Identifier = br.ReadBytes(4);
+			NLI1.SectionSize = br.ReadUInt32();
+			NLI1.Unknown1 = br.ReadBytes(8);
+			NLI1.Unknown2 = br.ReadBytes((int)NLI1.SectionSize);
+
+			PaddingSeek(ref br);
+		}
+
 		private void ReadATR1(ref BinaryReader br)
 		{
-			ATR1.Offset = br.BaseStream.Position;
 			ATR1.Identifier = br.ReadBytes(4);
 			ATR1.SectionSize = br.ReadUInt32();
 			ATR1.Unknown1 = br.ReadBytes(8);
@@ -170,49 +200,54 @@ namespace MsbtEditor
 
 		private void ReadTXT2(ref BinaryReader br)
 		{
-			TXT2.Offset = br.BaseStream.Position;
 			TXT2.Identifier = br.ReadBytes(4);
 			TXT2.SectionSize = br.ReadUInt32();
 			TXT2.Unknown1 = br.ReadBytes(8);
 			long startOfStrings = br.BaseStream.Position;
 			TXT2.NumberOfStrings = br.ReadUInt32();
 
-			TXT2.OriginalValues = new List<Value>();
-			TXT2.Values = new List<Value>();
-
 			List<UInt32> offsets = new List<UInt32>();
 			for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				offsets.Add(br.ReadUInt32());
 			for (int i = 0; i < TXT2.NumberOfStrings; i++)
 			{
-				Value value = new Value();
+				Entry entry = new Entry();
+				entry.Controls = new List<byte[]>();
 				bool eos = false;
-				UInt32 next = offsets[0];
+				UInt32 next = (i + 1 < offsets.Count - 1) ? ((UInt32)startOfStrings + offsets[i + 1]) : 0;
 
 				br.BaseStream.Seek(startOfStrings + offsets[i], SeekOrigin.Begin);
+				Debug.Print("Offset " + i + ": " + ((UInt32)startOfStrings + offsets[i]).ToString("X4"));
 
-				if (i + 1 >= offsets.Count)
+				List<byte> result = new List<byte>();
+				while (!eos)
 				{
-					List<byte> result = new List<byte>();
-					while (!eos)
+					byte[] unichar = br.ReadBytes(2);
+
+					if (unichar[0] == 0x0 && unichar[1] == 0x0 && (br.BaseStream.Position >= next || next == 0))
+						eos = true;
+					else
 					{
-						byte unichar = br.ReadByte();
-
-						if (unichar == 0xAB || br.BaseStream.Position == br.BaseStream.Length)
-							eos = true;
+						if (unichar[0] != 0x0 || unichar[1] != 0x0)
+							result.AddRange(unichar);
 						else
-							result.Add(unichar);
+						{
+							entry.Controls.Add(result.ToArray());
+							result.Clear();
+						}
 					}
-					value.Text = result.ToArray();
 				}
-				else
-					value.Text = br.ReadBytes((int)((startOfStrings + offsets[i + 1]) - (startOfStrings + offsets[i])));
-				value.ID = i;
-				TXT2.OriginalValues.Add(value);
+				entry.Value = result.ToArray();
+				entry.ID = i;
+				TXT2.OriginalEntries.Add(entry);
 
-				Value valueEdited = new Value();
-				valueEdited.Text = value.Text;
-				TXT2.Values.Add(valueEdited);
+				Entry entryEdited = new Entry();
+				entryEdited.Controls = new List<byte[]>();
+				foreach (byte[] control in entry.Controls)
+					entryEdited.Controls.Add(control);
+				entryEdited.Value = entry.Value;
+				entryEdited.ID = entry.ID;
+				TXT2.Entries.Add(entryEdited);
 			}
 
 			PaddingSeek(ref br);
@@ -248,11 +283,18 @@ namespace MsbtEditor
 				{
 					if (section == "LBL1")
 						WriteLBL1(ref bw);
+					else if (section == "NLI1")
+						WriteNLI1(ref bw);
 					else if (section == "ATR1")
 						WriteATR1(ref bw);
 					else if (section == "TXT2")
 						WriteTXT2(ref bw);
 				}
+
+				// Update FileSize
+				long fileSize = bw.BaseStream.Position;
+				bw.BaseStream.Seek(Header.FileSizeOffset, SeekOrigin.Begin);
+				bw.Write((UInt32)fileSize);
 
 				bw.Close();
 			}
@@ -274,7 +316,7 @@ namespace MsbtEditor
 				bw.Write(LBL1.Unknown2);
 				bw.Write(LBL1.Unknown3);
 
-				foreach (Label lbl in LBL1.Labels)
+				foreach (Entry lbl in LBL1.Labels)
 				{
 					bw.Write(Convert.ToByte(lbl.Length));
 					bw.Write(lbl.Value);
@@ -286,6 +328,29 @@ namespace MsbtEditor
 				result = true;
 			}
 			catch(Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
+
+		private bool WriteNLI1(ref BinaryWriter bw)
+		{
+			bool result = false;
+
+			try
+			{
+				bw.Write(NLI1.Identifier);
+				bw.Write(NLI1.SectionSize);
+				bw.Write(NLI1.Unknown1);
+				bw.Write(NLI1.Unknown2);
+
+				PaddingWrite(ref bw);
+
+				result = true;
+			}
+			catch (Exception)
 			{
 				result = false;
 			}
@@ -336,20 +401,23 @@ namespace MsbtEditor
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					offsets.Add(offsetsLength + runningTotal);
-					runningTotal += (UInt32)(TXT2.Values[i].Text.Length);
-					if (TXT2.Values[i].Text[TXT2.Values[i].Text.Length - 2] != '\0' && TXT2.Values[i].Text[TXT2.Values[i].Text.Length - 1] != '\0')
-						runningTotal += 2;
+					foreach (byte[] control in TXT2.Entries[i].Controls)
+						runningTotal += ((UInt32)control.Length) + 2;
+					runningTotal += ((UInt32)TXT2.Entries[i].Value.Length) + 2;
 				}
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					bw.Write(offsets[i]);
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
-					bw.Write(TXT2.Values[i].Text);
-					if (TXT2.Values[i].Text[TXT2.Values[i].Text.Length - 2] != '\0' && TXT2.Values[i].Text[TXT2.Values[i].Text.Length - 1] != '\0')
+					foreach (byte[] control in TXT2.Entries[i].Controls)
 					{
+						bw.Write(control);
 						bw.Write('\0');
 						bw.Write('\0');
 					}
+					bw.Write(TXT2.Entries[i].Value);
+					bw.Write('\0');
+					bw.Write('\0');
 				}
 
 				PaddingWrite(ref bw);

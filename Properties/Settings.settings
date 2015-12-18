@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="InitialDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ApplicationName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">MSBT Editor Reloaded v0.4 Alpha</Value>
+      <Value Profile="(Default)">MSBT Editor Reloaded v0.4 Beta</Value>
     </Setting>
   </Settings>
 </SettingsFile>
