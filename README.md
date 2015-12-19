@@ -1,4 +1,4 @@
-# MSBT Editor Relaoded
+# MSBT Editor Reloaded
 This is a modified version of Exelix11's MSBT file editor.
 
 ### Supported MSBT sections
