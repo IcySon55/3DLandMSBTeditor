@@ -20,8 +20,7 @@ namespace MsbtEditor
 		private MSBT _msbt = null;
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
-		private bool _updateText = true;
-		private bool _updateHex = true;
+		private int _subIndex = 0;
 
 		public frmMain(string[] args)
 		{
@@ -207,6 +206,7 @@ namespace MsbtEditor
 				_msbt = new MSBT(_msbt.File.FullName); // Reload to refresh Original Values
 				_hasChanges = false;
 				UpdateForm();
+				lstStrings_SelectedIndexChanged(null, null);
 			}
 
 			return dr;
@@ -216,22 +216,79 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Value).Replace("\n", "\r\n");
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Value).Replace("\n", "\r\n");
+			_subIndex = 0;
+			lstSubStrings.Items.Clear();
+			for (int i = 0; i < _msbt.TXT2.Entries[entry.ID].Values.Count; i++)
+			{
+				Entry subEntry = new Entry();
+				subEntry.ID = i;
 
-			UpdateHexView();
+				lstSubStrings.Items.Add(subEntry);
 
-			// TODO: show string info
+				if (lstSubStrings.Items.Count > 0)
+					lstSubStrings.SelectedIndex = 0;
+			}
 		}
 
-		private void txtEdit_KeyUp(object sender, EventArgs e)
+		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			_subIndex = lstSubStrings.SelectedIndex;
+			UpdateTextView();
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (keyData == Keys.Tab || keyData == (Keys.Tab | Keys.Shift))
+			{
+				if (txtEdit.Focused)
+				{
+					if (keyData == (Keys.Tab | Keys.Shift))
+						lstStrings.SelectedIndex -= (lstStrings.SelectedIndex - 1 >= 0 ? 1 : (lstStrings.Items.Count - 1) * -1);
+					else
+						lstStrings.SelectedIndex += (lstStrings.SelectedIndex + 1 < lstStrings.Items.Count ? 1 : (lstStrings.Items.Count - 1) * -1);
+					return true;
+				}
+				else
+					return base.ProcessCmdKey(ref msg, keyData);
+			}
+			else
+				return base.ProcessCmdKey(ref msg, keyData);
+		}
+
+		private void txtEdit_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Control && e.KeyCode == Keys.A)
+			{
+				txtEdit.SelectAll();
+				e.SuppressKeyPress = true;
+			}
+		}
+
+		private void txtEdit_KeyUp(object sender, KeyEventArgs e)
 		{
 			string result = txtEdit.Text;
 
 			Entry entry = (Entry)lstStrings.SelectedItem;
-			_msbt.TXT2.Entries[entry.ID].Value = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
+			_msbt.TXT2.Entries[entry.ID].Values[_subIndex] = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
 
 			UpdateHexView();
+		}
+
+		private void UpdateTextView()
+		{
+			Entry entry = (Entry)lstStrings.SelectedItem;
+
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[_subIndex]).Replace("\n", "\r\n");
+			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[_subIndex]).Replace("\n", "\r\n");
+
+			string result = string.Empty;
+			foreach (byte[] value in _msbt.TXT2.Entries[entry.ID].Values)
+				result += Encoding.Unicode.GetString(value).Replace("\n", "\r\n");
+			txtConcatenated.Text = result;
+
+			UpdateHexView();
+
+			// TODO: show string info
 		}
 
 		private void UpdateHexView()
@@ -241,7 +298,7 @@ namespace MsbtEditor
 			try
 			{
 				Entry entry = (Entry)lstStrings.SelectedItem;
-				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Value);
+				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Values[_subIndex]);
 
 				dfbp = new DynamicFileByteProvider(strm);
 				dfbp.Changed += new EventHandler(byteProvider_Changed);
@@ -260,9 +317,9 @@ namespace MsbtEditor
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));
-			_msbt.TXT2.Entries[entry.ID].Value = bytes.ToArray();
+			_msbt.TXT2.Entries[entry.ID].Values[_subIndex] = bytes.ToArray();
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Value);
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[_subIndex]);
 		}
 
 		// Utilities
@@ -274,8 +331,10 @@ namespace MsbtEditor
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
+			lstSubStrings.Enabled = _fileOpen;
 			txtEdit.Enabled = _fileOpen;
 			txtOriginal.Enabled = _fileOpen;
+			txtConcatenated.Enabled = _fileOpen;
 			hbxHexView.Enabled = _fileOpen;
 		}
 

@@ -42,8 +42,8 @@
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lstStrings = new System.Windows.Forms.ListBox();
-			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			this.lblStrings = new System.Windows.Forms.Label();
+			this.lblEdit = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.hbxHexView = new Be.Windows.Forms.HexBox();
 			this.stsMain = new System.Windows.Forms.StatusStrip();
@@ -52,9 +52,12 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.txtOriginal = new System.Windows.Forms.TextBox();
 			this.txtEdit = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
+			this.lstSubStrings = new System.Windows.Forms.ListBox();
+			this.lblOriginal = new System.Windows.Forms.Label();
 			this.ofdOpenFile = new System.Windows.Forms.OpenFileDialog();
 			this.sfdSaveEntity = new System.Windows.Forms.SaveFileDialog();
+			this.lblSubStrings = new System.Windows.Forms.Label();
+			this.txtConcatenated = new System.Windows.Forms.TextBox();
 			this.mnuMain.SuspendLayout();
 			this.stsMain.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -88,7 +91,7 @@
 			this.loadToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_open;
 			this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
 			this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.loadToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.loadToolStripMenuItem.Text = "&Open";
 			this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
 			// 
@@ -97,7 +100,7 @@
 			this.saveToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -106,21 +109,21 @@
 			this.saveAsToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave as...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -165,7 +168,7 @@
 			this.aboutToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
@@ -179,36 +182,36 @@
 			this.lstStrings.Location = new System.Drawing.Point(13, 49);
 			this.lstStrings.Margin = new System.Windows.Forms.Padding(4);
 			this.lstStrings.Name = "lstStrings";
-			this.lstStrings.Size = new System.Drawing.Size(267, 453);
+			this.lstStrings.Size = new System.Drawing.Size(271, 454);
 			this.lstStrings.Sorted = true;
 			this.lstStrings.TabIndex = 1;
 			this.lstStrings.SelectedIndexChanged += new System.EventHandler(this.lstStrings_SelectedIndexChanged);
 			// 
-			// label1
+			// lblStrings
 			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(13, 28);
-			this.label1.Margin = new System.Windows.Forms.Padding(4);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(42, 13);
-			this.label1.TabIndex = 4;
-			this.label1.Text = "Strings:";
+			this.lblStrings.AutoSize = true;
+			this.lblStrings.Location = new System.Drawing.Point(13, 28);
+			this.lblStrings.Margin = new System.Windows.Forms.Padding(4);
+			this.lblStrings.Name = "lblStrings";
+			this.lblStrings.Size = new System.Drawing.Size(42, 13);
+			this.lblStrings.TabIndex = 4;
+			this.lblStrings.Text = "Strings:";
 			// 
-			// label2
+			// lblEdit
 			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(288, 32);
-			this.label2.Margin = new System.Windows.Forms.Padding(4);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(28, 13);
-			this.label2.TabIndex = 5;
-			this.label2.Text = "Edit:";
+			this.lblEdit.AutoSize = true;
+			this.lblEdit.Location = new System.Drawing.Point(341, 32);
+			this.lblEdit.Margin = new System.Windows.Forms.Padding(4);
+			this.lblEdit.Name = "lblEdit";
+			this.lblEdit.Size = new System.Drawing.Size(28, 13);
+			this.lblEdit.TabIndex = 5;
+			this.lblEdit.Text = "Edit:";
 			// 
 			// label3
 			// 
 			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(288, 314);
+			this.label3.Location = new System.Drawing.Point(289, 316);
 			this.label3.Margin = new System.Windows.Forms.Padding(4);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(55, 13);
@@ -220,11 +223,11 @@
 			this.hbxHexView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.hbxHexView.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.hbxHexView.Location = new System.Drawing.Point(291, 335);
+			this.hbxHexView.Location = new System.Drawing.Point(292, 337);
 			this.hbxHexView.Margin = new System.Windows.Forms.Padding(4);
 			this.hbxHexView.Name = "hbxHexView";
 			this.hbxHexView.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-			this.hbxHexView.Size = new System.Drawing.Size(551, 167);
+			this.hbxHexView.Size = new System.Drawing.Size(550, 166);
 			this.hbxHexView.StringViewVisible = true;
 			this.hbxHexView.TabIndex = 10;
 			this.hbxHexView.UseFixedBytesPerLine = true;
@@ -235,7 +238,7 @@
 			this.stsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.slbAddress,
             this.slbStringCount});
-			this.stsMain.Location = new System.Drawing.Point(0, 514);
+			this.stsMain.Location = new System.Drawing.Point(0, 516);
 			this.stsMain.Name = "stsMain";
 			this.stsMain.Size = new System.Drawing.Size(854, 22);
 			this.stsMain.TabIndex = 11;
@@ -261,53 +264,68 @@
 			this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.tableLayoutPanel1.ColumnCount = 2;
+			this.tableLayoutPanel1.ColumnCount = 3;
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.Controls.Add(this.txtOriginal, 0, 0);
-			this.tableLayoutPanel1.Controls.Add(this.txtEdit, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this.txtOriginal, 2, 0);
+			this.tableLayoutPanel1.Controls.Add(this.txtEdit, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.lstSubStrings, 0, 0);
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(291, 49);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 1;
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(551, 258);
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(551, 157);
 			this.tableLayoutPanel1.TabIndex = 12;
 			// 
 			// txtOriginal
 			// 
+			this.txtOriginal.BackColor = System.Drawing.SystemColors.Window;
 			this.txtOriginal.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.txtOriginal.Enabled = false;
-			this.txtOriginal.Location = new System.Drawing.Point(280, 0);
-			this.txtOriginal.Margin = new System.Windows.Forms.Padding(5, 0, 0, 0);
+			this.txtOriginal.Location = new System.Drawing.Point(303, 0);
+			this.txtOriginal.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.txtOriginal.Multiline = true;
 			this.txtOriginal.Name = "txtOriginal";
 			this.txtOriginal.ReadOnly = true;
-			this.txtOriginal.Size = new System.Drawing.Size(271, 258);
-			this.txtOriginal.TabIndex = 5;
+			this.txtOriginal.Size = new System.Drawing.Size(248, 157);
+			this.txtOriginal.TabIndex = 6;
 			// 
 			// txtEdit
 			// 
 			this.txtEdit.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtEdit.Enabled = false;
-			this.txtEdit.Location = new System.Drawing.Point(0, 0);
-			this.txtEdit.Margin = new System.Windows.Forms.Padding(0, 0, 5, 0);
+			this.txtEdit.Location = new System.Drawing.Point(52, 0);
+			this.txtEdit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.txtEdit.Multiline = true;
 			this.txtEdit.Name = "txtEdit";
-			this.txtEdit.Size = new System.Drawing.Size(270, 258);
+			this.txtEdit.Size = new System.Drawing.Size(243, 157);
 			this.txtEdit.TabIndex = 4;
+			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyDown);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
 			// 
-			// label4
+			// lstSubStrings
 			// 
-			this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.lstSubStrings.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lstSubStrings.FormattingEnabled = true;
+			this.lstSubStrings.IntegralHeight = false;
+			this.lstSubStrings.Location = new System.Drawing.Point(0, 0);
+			this.lstSubStrings.Margin = new System.Windows.Forms.Padding(0, 0, 4, 0);
+			this.lstSubStrings.Name = "lstSubStrings";
+			this.lstSubStrings.Size = new System.Drawing.Size(44, 157);
+			this.lstSubStrings.TabIndex = 7;
+			this.lstSubStrings.SelectedIndexChanged += new System.EventHandler(this.lstSubStrings_SelectedIndexChanged);
+			// 
+			// lblOriginal
+			// 
+			this.lblOriginal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.label4.Location = new System.Drawing.Point(563, 32);
-			this.label4.Margin = new System.Windows.Forms.Padding(4);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(65, 13);
-			this.label4.TabIndex = 13;
-			this.label4.Text = "Original:";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.lblOriginal.Location = new System.Drawing.Point(592, 32);
+			this.lblOriginal.Margin = new System.Windows.Forms.Padding(4);
+			this.lblOriginal.Name = "lblOriginal";
+			this.lblOriginal.Size = new System.Drawing.Size(48, 13);
+			this.lblOriginal.TabIndex = 13;
+			this.lblOriginal.Text = "Original:";
+			this.lblOriginal.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// ofdOpenFile
 			// 
@@ -317,26 +335,50 @@
 			// 
 			this.sfdSaveEntity.Filter = "MSBT Files (*.msbt)|*.msbt";
 			// 
+			// lblSubStrings
+			// 
+			this.lblSubStrings.AutoSize = true;
+			this.lblSubStrings.Location = new System.Drawing.Point(288, 32);
+			this.lblSubStrings.Margin = new System.Windows.Forms.Padding(4);
+			this.lblSubStrings.Name = "lblSubStrings";
+			this.lblSubStrings.Size = new System.Drawing.Size(29, 13);
+			this.lblSubStrings.TabIndex = 14;
+			this.lblSubStrings.Text = "Sub:";
+			// 
+			// txtConcatenated
+			// 
+			this.txtConcatenated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtConcatenated.BackColor = System.Drawing.SystemColors.Window;
+			this.txtConcatenated.Location = new System.Drawing.Point(292, 213);
+			this.txtConcatenated.Margin = new System.Windows.Forms.Padding(4);
+			this.txtConcatenated.Multiline = true;
+			this.txtConcatenated.Name = "txtConcatenated";
+			this.txtConcatenated.ReadOnly = true;
+			this.txtConcatenated.Size = new System.Drawing.Size(549, 95);
+			this.txtConcatenated.TabIndex = 15;
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(854, 536);
-			this.Controls.Add(this.label4);
+			this.ClientSize = new System.Drawing.Size(854, 538);
+			this.Controls.Add(this.txtConcatenated);
+			this.Controls.Add(this.lblSubStrings);
+			this.Controls.Add(this.lblOriginal);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.stsMain);
 			this.Controls.Add(this.hbxHexView);
 			this.Controls.Add(this.label3);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this.lblEdit);
+			this.Controls.Add(this.lblStrings);
 			this.Controls.Add(this.lstStrings);
 			this.Controls.Add(this.mnuMain);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.mnuMain;
-			this.MinimumSize = new System.Drawing.Size(870, 574);
+			this.MinimumSize = new System.Drawing.Size(870, 576);
 			this.Name = "frmMain";
-			this.Text = "MSBT Editor";
 			this.Load += new System.EventHandler(this.frmMain_Load);
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmMain_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmMain_DragEnter);
@@ -363,8 +405,8 @@
         private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
         private System.Windows.Forms.ListBox lstStrings;
-        private System.Windows.Forms.Label label1;
-		  private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblStrings;
+		  private System.Windows.Forms.Label lblEdit;
 		  private System.Windows.Forms.Label label3;
         private Be.Windows.Forms.HexBox hbxHexView;
 		  private System.Windows.Forms.StatusStrip stsMain;
@@ -374,11 +416,14 @@
 		  private System.Windows.Forms.ToolStripStatusLabel slbAddress;
 		  private System.Windows.Forms.ToolStripStatusLabel slbStringCount;
 		  private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		  private System.Windows.Forms.TextBox txtOriginal;
 		  private System.Windows.Forms.TextBox txtEdit;
-		  private System.Windows.Forms.Label label4;
+		  private System.Windows.Forms.Label lblOriginal;
 		  private System.Windows.Forms.OpenFileDialog ofdOpenFile;
 		  private System.Windows.Forms.SaveFileDialog sfdSaveEntity;
+		  private System.Windows.Forms.TextBox txtOriginal;
+		  private System.Windows.Forms.ListBox lstSubStrings;
+		  private System.Windows.Forms.Label lblSubStrings;
+		  private System.Windows.Forms.TextBox txtConcatenated;
     }
 }
 
