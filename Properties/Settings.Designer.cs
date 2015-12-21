@@ -37,7 +37,7 @@ namespace MsbtEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MSBT Editor Reloaded v0.5 Beta")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MSBT Editor Reloaded v0.6")]
         public string ApplicationName {
             get {
                 return ((string)(this["ApplicationName"]));

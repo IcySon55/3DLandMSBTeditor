@@ -31,7 +31,7 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -48,6 +48,7 @@
 			this.hbxHexView = new Be.Windows.Forms.HexBox();
 			this.stsMain = new System.Windows.Forms.StatusStrip();
 			this.slbAddress = new System.Windows.Forms.ToolStripStatusLabel();
+			this.slbActions = new System.Windows.Forms.ToolStripStatusLabel();
 			this.slbStringCount = new System.Windows.Forms.ToolStripStatusLabel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.txtOriginal = new System.Windows.Forms.TextBox();
@@ -77,7 +78,7 @@
 			// fileToolStripMenuItem
 			// 
 			this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadToolStripMenuItem,
+            this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.toolStripSeparator1,
@@ -86,14 +87,14 @@
 			this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
 			this.fileToolStripMenuItem.Text = "&File";
 			// 
-			// loadToolStripMenuItem
+			// openToolStripMenuItem
 			// 
-			this.loadToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_open;
-			this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-			this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.loadToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-			this.loadToolStripMenuItem.Text = "&Open";
-			this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+			this.openToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_open;
+			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.openToolStripMenuItem.Text = "&Open";
+			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
 			// saveToolStripMenuItem
 			// 
@@ -232,11 +233,13 @@
 			this.hbxHexView.TabIndex = 10;
 			this.hbxHexView.UseFixedBytesPerLine = true;
 			this.hbxHexView.VScrollBarVisible = true;
+			this.hbxHexView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.hbxSelectAll_KeyDown);
 			// 
 			// stsMain
 			// 
 			this.stsMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.slbAddress,
+            this.slbActions,
             this.slbStringCount});
 			this.stsMain.Location = new System.Drawing.Point(0, 516);
 			this.stsMain.Name = "stsMain";
@@ -246,15 +249,22 @@
 			// slbAddress
 			// 
 			this.slbAddress.Name = "slbAddress";
-			this.slbAddress.Size = new System.Drawing.Size(419, 17);
+			this.slbAddress.Size = new System.Drawing.Size(279, 17);
 			this.slbAddress.Spring = true;
 			this.slbAddress.Text = "Address";
 			this.slbAddress.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// slbActions
+			// 
+			this.slbActions.Name = "slbActions";
+			this.slbActions.Size = new System.Drawing.Size(279, 17);
+			this.slbActions.Spring = true;
+			this.slbActions.Text = "Actions";
+			// 
 			// slbStringCount
 			// 
 			this.slbStringCount.Name = "slbStringCount";
-			this.slbStringCount.Size = new System.Drawing.Size(419, 17);
+			this.slbStringCount.Size = new System.Drawing.Size(279, 17);
 			this.slbStringCount.Spring = true;
 			this.slbStringCount.Text = "Count";
 			this.slbStringCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -282,6 +292,7 @@
 			// 
 			this.txtOriginal.BackColor = System.Drawing.SystemColors.Window;
 			this.txtOriginal.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.txtOriginal.Enabled = false;
 			this.txtOriginal.Location = new System.Drawing.Point(303, 0);
 			this.txtOriginal.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.txtOriginal.Multiline = true;
@@ -289,6 +300,7 @@
 			this.txtOriginal.ReadOnly = true;
 			this.txtOriginal.Size = new System.Drawing.Size(248, 157);
 			this.txtOriginal.TabIndex = 6;
+			this.txtOriginal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			// 
 			// txtEdit
 			// 
@@ -300,7 +312,7 @@
 			this.txtEdit.Name = "txtEdit";
 			this.txtEdit.Size = new System.Drawing.Size(243, 157);
 			this.txtEdit.TabIndex = 4;
-			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyDown);
+			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
 			// 
 			// lstSubStrings
@@ -350,6 +362,7 @@
 			this.txtConcatenated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtConcatenated.BackColor = System.Drawing.SystemColors.Window;
+			this.txtConcatenated.Enabled = false;
 			this.txtConcatenated.Location = new System.Drawing.Point(292, 213);
 			this.txtConcatenated.Margin = new System.Windows.Forms.Padding(4);
 			this.txtConcatenated.Multiline = true;
@@ -357,6 +370,7 @@
 			this.txtConcatenated.ReadOnly = true;
 			this.txtConcatenated.Size = new System.Drawing.Size(549, 95);
 			this.txtConcatenated.TabIndex = 15;
+			this.txtConcatenated.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			// 
 			// frmMain
 			// 
@@ -379,6 +393,7 @@
 			this.MainMenuStrip = this.mnuMain;
 			this.MinimumSize = new System.Drawing.Size(870, 576);
 			this.Name = "frmMain";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
 			this.Load += new System.EventHandler(this.frmMain_Load);
 			this.DragDrop += new System.Windows.Forms.DragEventHandler(this.frmMain_DragDrop);
 			this.DragEnter += new System.Windows.Forms.DragEventHandler(this.frmMain_DragEnter);
@@ -397,7 +412,7 @@
 
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		  private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -424,6 +439,7 @@
 		  private System.Windows.Forms.ListBox lstSubStrings;
 		  private System.Windows.Forms.Label lblSubStrings;
 		  private System.Windows.Forms.TextBox txtConcatenated;
+		  private System.Windows.Forms.ToolStripStatusLabel slbActions;
     }
 }
 

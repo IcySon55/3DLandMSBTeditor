@@ -11,7 +11,7 @@ namespace MsbtEditor
 	class Header
 	{
 		public byte[] Identifier; // MsgStdBn
-		public UInt16 ByteOrderMark;
+		public byte[] ByteOrderMark;
 		public UInt16 Unknown1; // Always 0x0000
 		public UInt16 Unknown2; // Always 0x0103
 		public UInt16 NumberOfSections;
@@ -75,6 +75,7 @@ namespace MsbtEditor
 	class MSBT
 	{
 		public FileInfo File { get; set; }
+		public bool HasLabels { get; set; }
 
 		public Header Header = new Header();
 		public LBL1 LBL1 = new LBL1();
@@ -92,7 +93,7 @@ namespace MsbtEditor
 			if (File.Exists)
 			{
 				FileStream fs = System.IO.File.Open(File.FullName, FileMode.Open, FileAccess.Read, FileShare.None);
-				BinaryReader br = new BinaryReader(fs);
+				BinaryReaderX br = new BinaryReaderX(fs);
 
 				// Initialize Members
 				LBL1.Labels = new List<Entry>();
@@ -103,7 +104,11 @@ namespace MsbtEditor
 				Header.Identifier = br.ReadBytes(8);
 				if (Encoding.ASCII.GetString(Header.Identifier) != "MsgStdBn")
 					throw new Exception("File is not a valid MSBT.");
-				Header.ByteOrderMark = br.ReadUInt16();
+				Header.ByteOrderMark = br.ReadBytes(2);
+
+				// Byte Order
+				br.ByteOrder = Header.ByteOrderMark[0] == 0xFF ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+
 				Header.Unknown1 = br.ReadUInt16();
 				Header.Unknown2 = br.ReadUInt16();
 				Header.NumberOfSections = br.ReadUInt16();
@@ -142,7 +147,7 @@ namespace MsbtEditor
 			}
 		}
 
-		private string PeekString(BinaryReader br, int length = 4)
+		private string PeekString(BinaryReaderX br, int length = 4)
 		{
 			List<byte> bytes = new List<byte>();
 			long startOffset = br.BaseStream.Position;
@@ -155,7 +160,7 @@ namespace MsbtEditor
 			return Encoding.ASCII.GetString(bytes.ToArray());
 		}
 
-		private void ReadLBL1(BinaryReader br)
+		private void ReadLBL1(BinaryReaderX br)
 		{
 			long offset = br.BaseStream.Position;
 			LBL1.Identifier = br.ReadBytes(4);
@@ -175,10 +180,12 @@ namespace MsbtEditor
 				LBL1.Labels.Add(lbl);
 			}
 
+			HasLabels = LBL1.Labels.Count > 0;
+
 			PaddingSeek(br);
 		}
 
-		private void ReadNLI1(BinaryReader br)
+		private void ReadNLI1(BinaryReaderX br)
 		{
 			NLI1.Identifier = br.ReadBytes(4);
 			NLI1.SectionSize = br.ReadUInt32();
@@ -188,7 +195,7 @@ namespace MsbtEditor
 			PaddingSeek(br);
 		}
 
-		private void ReadATR1(BinaryReader br)
+		private void ReadATR1(BinaryReaderX br)
 		{
 			ATR1.Identifier = br.ReadBytes(4);
 			ATR1.SectionSize = br.ReadUInt32();
@@ -198,7 +205,7 @@ namespace MsbtEditor
 			PaddingSeek(br);
 		}
 
-		private void ReadTXT2(BinaryReader br)
+		private void ReadTXT2(BinaryReaderX br)
 		{
 			TXT2.Identifier = br.ReadBytes(4);
 			TXT2.SectionSize = br.ReadUInt32();
@@ -213,20 +220,22 @@ namespace MsbtEditor
 			{
 				Entry entry = new Entry();
 				bool eos = false;
-				UInt32 nextOffset = (i + 1 < offsets.Count - 1) ? ((UInt32)startOfStrings + offsets[i + 1]) : 0;
+				UInt32 nextOffset = (i + 1 < offsets.Count) ? ((UInt32)startOfStrings + offsets[i + 1]) : ((UInt32)startOfStrings + TXT2.SectionSize);
 
 				br.BaseStream.Seek(startOfStrings + offsets[i], SeekOrigin.Begin);
-				//Debug.Print("Offset " + i + ": " + ((UInt32)startOfStrings + offsets[i]).ToString("X4"));
 
 				List<byte> result = new List<byte>();
 				while (!eos)
 				{
-					byte[] unichar = br.ReadBytes(2);
-
-					if (unichar[0] == 0x0 && unichar[1] == 0x0 && (br.BaseStream.Position >= nextOffset || nextOffset == 0))
+					if (br.BaseStream.Position == nextOffset)
 						eos = true;
 					else
 					{
+						byte[] unichar = br.ReadBytes(2);
+
+						if (Header.ByteOrderMark[0] == 0xFE)
+							Array.Reverse(unichar);
+
 						if (unichar[0] != 0x0 || unichar[1] != 0x0)
 							result.AddRange(unichar);
 						else
@@ -236,7 +245,6 @@ namespace MsbtEditor
 						}
 					}
 				}
-				entry.Values.Add(result.ToArray());
 				entry.ID = i;
 				TXT2.OriginalEntries.Add(entry);
 
@@ -251,7 +259,7 @@ namespace MsbtEditor
 			PaddingSeek(br);
 		}
 
-		private void PaddingSeek(BinaryReader br)
+		private void PaddingSeek(BinaryReaderX br)
 		{
 			long remainder = br.BaseStream.Position % 16;
 			if (remainder > 0)
@@ -265,7 +273,10 @@ namespace MsbtEditor
 			try
 			{
 				FileStream fs = System.IO.File.Create(File.FullName);
-				BinaryWriter bw = new BinaryWriter(fs);
+				BinaryWriterX bw = new BinaryWriterX(fs);
+
+				// Byte Order
+				bw.ByteOrder = Header.ByteOrderMark[0] == 0xFF ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
 
 				// Header
 				bw.Write(Header.Identifier);
@@ -302,7 +313,7 @@ namespace MsbtEditor
 			return result;
 		}
 
-		private bool WriteLBL1(BinaryWriter bw)
+		private bool WriteLBL1(BinaryWriterX bw)
 		{
 			bool result = false;
 
@@ -341,7 +352,7 @@ namespace MsbtEditor
 			return result;
 		}
 
-		private bool WriteNLI1(BinaryWriter bw)
+		private bool WriteNLI1(BinaryWriterX bw)
 		{
 			bool result = false;
 
@@ -364,7 +375,7 @@ namespace MsbtEditor
 			return result;
 		}
 
-		private bool WriteATR1(BinaryWriter bw)
+		private bool WriteATR1(BinaryWriterX bw)
 		{
 			bool result = false;
 
@@ -387,7 +398,7 @@ namespace MsbtEditor
 			return result;
 		}
 
-		private bool WriteTXT2(BinaryWriter bw)
+		private bool WriteTXT2(BinaryWriterX bw)
 		{
 			bool result = false;
 
@@ -425,7 +436,14 @@ namespace MsbtEditor
 				{
 					foreach (byte[] value in TXT2.Entries[i].Values)
 					{
-						bw.Write(value);
+						if (Header.ByteOrderMark[0] == 0xFF)
+							bw.Write(value);
+						else
+							for (int j = 0; j < value.Length; j += 2)
+							{
+								bw.Write(value[j + 1]);
+								bw.Write(value[j]);
+							}
 						bw.Write('\0');
 						bw.Write('\0');
 					}
@@ -443,7 +461,7 @@ namespace MsbtEditor
 			return result;
 		}
 
-		private void PaddingWrite(BinaryWriter bw)
+		private void PaddingWrite(BinaryWriterX bw)
 		{
 			long remainder = bw.BaseStream.Position % 16;
 			if (remainder > 0)

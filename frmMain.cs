@@ -20,7 +20,6 @@ namespace MsbtEditor
 		private MSBT _msbt = null;
 		private bool _fileOpen = false;
 		private bool _hasChanges = false;
-		private int _subIndex = 0;
 
 		public frmMain(string[] args)
 		{
@@ -33,8 +32,27 @@ namespace MsbtEditor
 		private void frmMain_Load(object sender, EventArgs e)
 		{
 			slbAddress.Text = string.Empty;
+			slbActions.Text = string.Empty;
 			slbStringCount.Text = string.Empty;
 			UpdateForm();
+		}
+
+		private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			DialogResult dr = DialogResult.No;
+
+			if (_fileOpen && _hasChanges)
+				dr = MessageBox.Show("You have unsaved changes in " + FileName() + ". Save changes before exiting?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+
+			switch (dr)
+			{
+				case DialogResult.Yes:
+					SaveFile();
+					break;
+				case DialogResult.Cancel:
+					e.Cancel = true;
+					break;
+			}
 		}
 
 		private void frmMain_DragEnter(object sender, DragEventArgs e)
@@ -45,12 +63,13 @@ namespace MsbtEditor
 		private void frmMain_DragDrop(object sender, DragEventArgs e)
 		{
 			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-			ConfirmOpenFile(files[0]);
+			if (files.Length > 0 && File.Exists(files[0]))
+				ConfirmOpenFile(files[0]);
 		}
 
 		#region Menu and Toolbar
 
-		private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			ConfirmOpenFile();
 		}
@@ -98,9 +117,7 @@ namespace MsbtEditor
 			DialogResult dr = DialogResult.No;
 
 			if (_fileOpen && _hasChanges)
-			{
 				dr = MessageBox.Show("You have unsaved changes in " + FileName() + ". Save changes before opening another file?", "Unsaved Changes", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-			}
 
 			switch (dr)
 			{
@@ -111,8 +128,6 @@ namespace MsbtEditor
 				case DialogResult.No:
 					OpenFile(filename);
 					break;
-				case DialogResult.Cancel:
-					break;
 			}
 		}
 
@@ -121,7 +136,7 @@ namespace MsbtEditor
 			ofdOpenFile.InitialDirectory = Settings.Default.InitialDirectory;
 			DialogResult dr = DialogResult.OK;
 
-			if (filename != "")
+			if (filename != string.Empty)
 			{
 				_msbt = new MSBT(filename);
 				_fileOpen = true;
@@ -160,7 +175,7 @@ namespace MsbtEditor
 		{
 			lstStrings.Items.Clear();
 
-			if (_msbt.LBL1.Labels.Count > 0)
+			if (_msbt.HasLabels)
 			{
 				lstStrings.Sorted = true;
 				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
@@ -180,6 +195,7 @@ namespace MsbtEditor
 			if (lstStrings.Items.Count > 0)
 				lstStrings.SelectedIndex = 0;
 
+			slbActions.Text = "Successfully opened " + FileName();
 			slbStringCount.Text = "Strings in this file: " + _msbt.TXT2.NumberOfStrings;
 		}
 
@@ -203,11 +219,14 @@ namespace MsbtEditor
 			if (dr == DialogResult.OK)
 			{
 				_msbt.Save();
-				_msbt = new MSBT(_msbt.File.FullName); // Reload to refresh Original Values
 				_hasChanges = false;
+				UpdateTextView();
+				UpdateTextPreview();
+				UpdateHexView();
 				UpdateForm();
-				lstStrings_SelectedIndexChanged(null, null);
 			}
+
+			slbActions.Text = "Successfully saved " + FileName();
 
 			return dr;
 		}
@@ -216,7 +235,6 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			_subIndex = 0;
 			lstSubStrings.Items.Clear();
 			for (int i = 0; i < _msbt.TXT2.Entries[entry.ID].Values.Count; i++)
 			{
@@ -232,34 +250,60 @@ namespace MsbtEditor
 
 		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_subIndex = lstSubStrings.SelectedIndex;
 			UpdateTextView();
+			UpdateTextPreview();
+			UpdateHexView();
 		}
 
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			if (keyData == Keys.Tab || keyData == (Keys.Tab | Keys.Shift))
 			{
-				if (txtEdit.Focused)
+				if (keyData == (Keys.Tab | Keys.Shift))
 				{
-					if (keyData == (Keys.Tab | Keys.Shift))
-						lstStrings.SelectedIndex -= (lstStrings.SelectedIndex - 1 >= 0 ? 1 : (lstStrings.Items.Count - 1) * -1);
+					if (lstSubStrings.Items.Count > 1 && lstSubStrings.SelectedIndex - 1 >= 0)
+						lstSubStrings.SelectedIndex -= 1;
 					else
-						lstStrings.SelectedIndex += (lstStrings.SelectedIndex + 1 < lstStrings.Items.Count ? 1 : (lstStrings.Items.Count - 1) * -1);
-					return true;
+					{
+						lstStrings.SelectedIndex -= (lstStrings.SelectedIndex - 1 >= 0 ? 1 : (lstStrings.Items.Count - 1) * -1);
+						if (lstSubStrings.Items.Count > 1)
+							lstSubStrings.SelectedIndex = lstSubStrings.Items.Count - 1;
+					}
 				}
 				else
-					return base.ProcessCmdKey(ref msg, keyData);
+				{
+					if (lstSubStrings.Items.Count > 1 && lstSubStrings.SelectedIndex + 1 < lstSubStrings.Items.Count)
+						lstSubStrings.SelectedIndex += 1;
+					else
+					{
+						lstStrings.SelectedIndex += (lstStrings.SelectedIndex + 1 < lstStrings.Items.Count ? 1 : (lstStrings.Items.Count - 1) * -1);
+						if (lstSubStrings.Items.Count > 1)
+							lstSubStrings.SelectedIndex = 0;
+					}
+				}
+
+				return true;
 			}
 			else
 				return base.ProcessCmdKey(ref msg, keyData);
 		}
 
-		private void txtEdit_KeyDown(object sender, KeyEventArgs e)
+		private void txtSelectAll_KeyDown(object sender, KeyEventArgs e)
 		{
+			TextBox txtBox = (TextBox)sender;
 			if (e.Control && e.KeyCode == Keys.A)
 			{
-				txtEdit.SelectAll();
+				txtBox.SelectAll();
+				e.SuppressKeyPress = true;
+			}
+		}
+
+		private void hbxSelectAll_KeyDown(object sender, KeyEventArgs e)
+		{
+			HexBox hbxBox = (HexBox)sender;
+			if (e.Control && e.KeyCode == Keys.A)
+			{
+				hbxBox.SelectAll();
 				e.SuppressKeyPress = true;
 			}
 		}
@@ -269,44 +313,35 @@ namespace MsbtEditor
 			string result = txtEdit.Text;
 
 			Entry entry = (Entry)lstStrings.SelectedItem;
-			_msbt.TXT2.Entries[entry.ID].Values[_subIndex] = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
+			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
 
+			if (_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] != _msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex])
+				_hasChanges = true;
+
+			UpdateTextPreview();
 			UpdateHexView();
+			UpdateForm();
 		}
 
 		private void UpdateTextView()
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[_subIndex]).Replace("\n", "\r\n");
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[_subIndex]).Replace("\n", "\r\n");
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
+			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
+
+			slbAddress.Text = "String: " + (entry.ID + 1);
+		}
+
+		private void UpdateTextPreview()
+		{
+			Entry entry = (Entry)lstStrings.SelectedItem;
 
 			string result = string.Empty;
 			foreach (byte[] value in _msbt.TXT2.Entries[entry.ID].Values)
 				result += Encoding.Unicode.GetString(value).Replace("\n", "\r\n");
+
 			txtConcatenated.Text = result;
-
-			UpdateHexView();
-
-			// TODO: show string info
-		}
-
-		private void UpdateHexView()
-		{
-			DynamicFileByteProvider dfbp = null;
-
-			try
-			{
-				Entry entry = (Entry)lstStrings.SelectedItem;
-				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Values[_subIndex]);
-
-				dfbp = new DynamicFileByteProvider(strm);
-				dfbp.Changed += new EventHandler(byteProvider_Changed);
-			}
-			catch (Exception)
-			{ }
-
-			hbxHexView.ByteProvider = dfbp;
 		}
 
 		protected void byteProvider_Changed(object sender, EventArgs e)
@@ -317,15 +352,38 @@ namespace MsbtEditor
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));
-			_msbt.TXT2.Entries[entry.ID].Values[_subIndex] = bytes.ToArray();
+			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] = bytes.ToArray();
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[_subIndex]);
+			if (_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] != _msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex])
+				_hasChanges = true;
+
+			UpdateTextView();
+			UpdateTextPreview();
+			UpdateForm();
+		}
+
+		private void UpdateHexView()
+		{
+			DynamicFileByteProvider dfbp = null;
+
+			try
+			{
+				Entry entry = (Entry)lstStrings.SelectedItem;
+				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex]);
+
+				dfbp = new DynamicFileByteProvider(strm);
+				dfbp.Changed += new EventHandler(byteProvider_Changed);
+			}
+			catch (Exception)
+			{ }
+
+			hbxHexView.ByteProvider = dfbp;
 		}
 
 		// Utilities
 		private void UpdateForm()
 		{
-			this.Text  = Settings.Default.ApplicationName + FileName() + (_hasChanges ? "*" : "");
+			this.Text = Settings.Default.ApplicationName + (FileName() != string.Empty ? " - " + FileName() : string.Empty) + (_hasChanges ? "*" : string.Empty);
 
 			saveToolStripMenuItem.Enabled = _fileOpen;
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
@@ -340,7 +398,7 @@ namespace MsbtEditor
 
 		private string FileName()
 		{
-			return _msbt == null || _msbt.File == null ? "" : " - " + _msbt.File.Name;
+			return _msbt == null || _msbt.File == null ? string.Empty : _msbt.File.Name;
 		}
 	}
 }
