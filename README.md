@@ -9,7 +9,8 @@ This is a modified version of Exelix11's MSBT file editor.
 
 ### Supported Games
 * Mario Kart 7 - Not fully tested. Need testers.
+* Super Mario Galaxy 2 - Partially tested. Need testers.
 * Others may be supported, need feedback.
  
 ### Known Issues
-* BigEndian MSBT files are currently not supported. Re: Super Mario Galaxy 2
+* None
