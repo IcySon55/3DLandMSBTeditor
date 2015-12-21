@@ -221,6 +221,7 @@ namespace MsbtEditor
 				_msbt.Save();
 				_hasChanges = false;
 				UpdateTextView();
+				UpdateOriginalText();
 				UpdateTextPreview();
 				UpdateHexView();
 				UpdateForm();
@@ -251,6 +252,7 @@ namespace MsbtEditor
 		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			UpdateTextView();
+			UpdateOriginalText();
 			UpdateTextPreview();
 			UpdateHexView();
 		}
@@ -315,7 +317,7 @@ namespace MsbtEditor
 			Entry entry = (Entry)lstStrings.SelectedItem;
 			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
 
-			if (_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] != _msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex])
+			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
 
 			UpdateTextPreview();
@@ -328,9 +330,15 @@ namespace MsbtEditor
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
 			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
 
-			slbAddress.Text = "String: " + (entry.ID + 1);
+			slbAddress.Text = "String: " + (entry.ID + 1) + "/" + (lstSubStrings.SelectedIndex + 1);
+		}
+
+		private void UpdateOriginalText()
+		{
+			Entry entry = (Entry)lstStrings.SelectedItem;
+
+			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
 		}
 
 		private void UpdateTextPreview()
@@ -354,12 +362,12 @@ namespace MsbtEditor
 				bytes.Add(dfbp.ReadByte(i));
 			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] = bytes.ToArray();
 
-			if (_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] != _msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex])
-				_hasChanges = true;
-
 			UpdateTextView();
 			UpdateTextPreview();
 			UpdateForm();
+
+			if (txtEdit.Text != txtOriginal.Text)
+				_hasChanges = true;
 		}
 
 		private void UpdateHexView()

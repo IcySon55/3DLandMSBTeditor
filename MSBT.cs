@@ -227,11 +227,14 @@ namespace MsbtEditor
 				List<byte> result = new List<byte>();
 				while (!eos)
 				{
-					if (br.BaseStream.Position == nextOffset)
+					if (br.BaseStream.Position == nextOffset || br.BaseStream.Position == Header.FileSize)
 						eos = true;
 					else
 					{
 						byte[] unichar = br.ReadBytes(2);
+
+						if (unichar[0] == paddingChar && unichar[1] == paddingChar)
+							break;
 
 						if (Header.ByteOrderMark[0] == 0xFE)
 							Array.Reverse(unichar);
@@ -434,6 +437,9 @@ namespace MsbtEditor
 					bw.Write(offsets[i]);
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
+					for (int j = 0; j < TXT2.Entries[i].Values.Count; j++)
+						TXT2.OriginalEntries[i].Values[j] = TXT2.Entries[i].Values[j];
+
 					foreach (byte[] value in TXT2.Entries[i].Values)
 					{
 						if (Header.ByteOrderMark[0] == 0xFF)
