@@ -191,7 +191,7 @@
 			// lblStrings
 			// 
 			this.lblStrings.AutoSize = true;
-			this.lblStrings.Location = new System.Drawing.Point(13, 28);
+			this.lblStrings.Location = new System.Drawing.Point(13, 32);
 			this.lblStrings.Margin = new System.Windows.Forms.Padding(4);
 			this.lblStrings.Name = "lblStrings";
 			this.lblStrings.Size = new System.Drawing.Size(42, 13);

@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ApplicationName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">MSBT Editor Reloaded v0.7</Value>
+      <Value Profile="(Default)">MSBT Editor Reloaded v0.8</Value>
     </Setting>
   </Settings>
 </SettingsFile>

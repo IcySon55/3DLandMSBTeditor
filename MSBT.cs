@@ -48,6 +48,14 @@ namespace MsbtEditor
 		public byte[] Unknown2;
 	}
 
+	class TSY1
+	{
+		public byte[] Identifier; // TSY1
+		public UInt32 SectionSize; // Begins after Unknown1
+		public byte[] Unknown1; // Always 0x0000 0000
+		public byte[] Unknown2;
+	}
+
 	class TXT2
 	{
 		public byte[] Identifier; // TXT2
@@ -81,6 +89,7 @@ namespace MsbtEditor
 		public LBL1 LBL1 = new LBL1();
 		public NLI1 NLI1 = new NLI1();
 		public ATR1 ATR1 = new ATR1();
+		public TSY1 TSY1 = new TSY1();
 		public TXT2 TXT2 = new TXT2();
 		public List<string> SectionOrder = new List<string>();
 
@@ -136,6 +145,11 @@ namespace MsbtEditor
 						ReadATR1(br);
 						SectionOrder.Add("ATR1");
 					}
+					else if (PeekString(br) == "TSY1")
+					{
+						ReadTSY1(br);
+						SectionOrder.Add("TSY1");
+					}
 					else if (PeekString(br) == "TXT2")
 					{
 						ReadTXT2(br);
@@ -162,12 +176,22 @@ namespace MsbtEditor
 
 		private void ReadLBL1(BinaryReaderX br)
 		{
+			bool eoi = false;
 			long offset = br.BaseStream.Position;
 			LBL1.Identifier = br.ReadBytes(4);
 			LBL1.SectionSize = br.ReadUInt32();
 			LBL1.Unknown1 = br.ReadBytes(8);
 			LBL1.Unknown2 = br.ReadBytes(8);
-			uint startOfLabels = br.ReadUInt32() + (uint)offset + (uint)LBL1.Unknown1.Length + (uint)LBL1.Unknown2.Length;
+			uint startOfLabels = (uint)br.BaseStream.Position + sizeof(UInt32);
+			while (!eoi)
+			{
+				uint temp = br.ReadUInt32();
+				if (temp > 2)
+				{
+					startOfLabels = temp + (uint)offset + (uint)LBL1.Unknown1.Length + (uint)LBL1.Unknown2.Length;
+					eoi = true;
+				}
+			}
 			br.BaseStream.Seek(-sizeof(UInt32), SeekOrigin.Current);
 			LBL1.Unknown3 = br.ReadBytes((int)startOfLabels - (int)br.BaseStream.Position);
 
@@ -201,6 +225,16 @@ namespace MsbtEditor
 			ATR1.SectionSize = br.ReadUInt32();
 			ATR1.Unknown1 = br.ReadBytes(8);
 			ATR1.Unknown2 = br.ReadBytes((int)ATR1.SectionSize); // Read in the entire section at once since we don't know what it's for
+
+			PaddingSeek(br);
+		}
+
+		private void ReadTSY1(BinaryReaderX br)
+		{
+			TSY1.Identifier = br.ReadBytes(4);
+			TSY1.SectionSize = br.ReadUInt32();
+			TSY1.Unknown1 = br.ReadBytes(8);
+			TSY1.Unknown2 = br.ReadBytes((int)TSY1.SectionSize); // Read in the entire section at once since we don't know what it's for
 
 			PaddingSeek(br);
 		}
@@ -299,6 +333,8 @@ namespace MsbtEditor
 						WriteNLI1(bw);
 					else if (section == "ATR1")
 						WriteATR1(bw);
+					else if (section == "TSY1")
+						WriteTSY1(bw);
 					else if (section == "TXT2")
 						WriteTXT2(bw);
 				}
@@ -388,6 +424,29 @@ namespace MsbtEditor
 				bw.Write(ATR1.SectionSize);
 				bw.Write(ATR1.Unknown1);
 				bw.Write(ATR1.Unknown2);
+
+				PaddingWrite(bw);
+
+				result = true;
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
+
+		private bool WriteTSY1(BinaryWriterX bw)
+		{
+			bool result = false;
+
+			try
+			{
+				bw.Write(TSY1.Identifier);
+				bw.Write(TSY1.SectionSize);
+				bw.Write(TSY1.Unknown1);
+				bw.Write(TSY1.Unknown2);
 
 				PaddingWrite(bw);
 
