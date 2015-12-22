@@ -75,6 +75,32 @@ namespace MsbtEditor
 			else
 				return BitConverter.ToUInt16(base.ReadBytes(8).Reverse().ToArray(), 0);
 		}
+
+		public string PeekString(int length = 4)
+		{
+			List<byte> bytes = new List<byte>();
+			long startOffset = BaseStream.Position;
+
+			for (int i = 0; i < length; i++)
+				bytes.Add(ReadByte());
+
+			BaseStream.Seek(startOffset, SeekOrigin.Begin);
+
+			return Encoding.ASCII.GetString(bytes.ToArray());
+		}
+
+		public string PeekString(int length, Encoding encoding)
+		{
+			List<byte> bytes = new List<byte>();
+			long startOffset = BaseStream.Position;
+
+			for (int i = 0; i < length; i++)
+				bytes.Add(ReadByte());
+
+			BaseStream.Seek(startOffset, SeekOrigin.Begin);
+
+			return encoding.GetString(bytes.ToArray());
+		}
 	}
 
 	class BinaryWriterX : BinaryWriter

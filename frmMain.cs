@@ -1,14 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MsbtEditor.Properties;
 using Be.Windows.Forms;
@@ -407,6 +400,48 @@ namespace MsbtEditor
 		private string FileName()
 		{
 			return _msbt == null || _msbt.File == null ? string.Empty : _msbt.File.Name;
+		}
+
+		// Tools
+		private void extractBG4ToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Select a BG4 Binary...";
+			ofd.Filter = "BG4 Archive (*.dat)|*.dat|All Files (*.*)|*.*";
+			ofd.InitialDirectory = Settings.Default.InitialDirectory;
+			ofd.RestoreDirectory = true;
+
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				string filename = ofd.FileName;
+
+				if (File.Exists(filename))
+				{
+					FolderBrowserDialog fbd = new FolderBrowserDialog();
+					fbd.Description = "Select the destination directory to extarct the files into.";
+					fbd.SelectedPath = Settings.Default.InitialDirectory;
+
+					if (fbd.ShowDialog() == DialogResult.OK)
+					{
+						string directory = fbd.SelectedPath;
+
+						if (Directory.Exists(directory))
+						{
+							bool overwrite = true;
+
+							if (new DirectoryInfo(directory).GetFiles().Length > 0)
+								overwrite = MessageBox.Show("Is it OK to overwrite files in the destination directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes ? true : false;
+
+							// Extract
+							BG4 bg4 = new BG4();
+
+							string result = bg4.Extract(filename, directory, overwrite);
+
+							MessageBox.Show(result, "BG4 Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						}
+					}
+				}
+			}
 		}
 	}
 }

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Diagnostics;
 
 namespace MsbtEditor
 {
@@ -130,27 +127,27 @@ namespace MsbtEditor
 				for (int i = 0; i < Header.NumberOfSections; i++)
 				{
 					// Section Detection
-					if (PeekString(br) == "LBL1")
+					if (br.PeekString() == "LBL1")
 					{
 						ReadLBL1(br);
 						SectionOrder.Add("LBL1");
 					}
-					else if (PeekString(br) == "NLI1")
+					else if (br.PeekString() == "NLI1")
 					{
 						ReadNLI1(br);
 						SectionOrder.Add("NLI1");
 					}
-					else if (PeekString(br) == "ATR1")
+					else if (br.PeekString() == "ATR1")
 					{
 						ReadATR1(br);
 						SectionOrder.Add("ATR1");
 					}
-					else if (PeekString(br) == "TSY1")
+					else if (br.PeekString() == "TSY1")
 					{
 						ReadTSY1(br);
 						SectionOrder.Add("TSY1");
 					}
-					else if (PeekString(br) == "TXT2")
+					else if (br.PeekString() == "TXT2")
 					{
 						ReadTXT2(br);
 						SectionOrder.Add("TXT2");
@@ -159,19 +156,6 @@ namespace MsbtEditor
 
 				br.Close();
 			}
-		}
-
-		private string PeekString(BinaryReaderX br, int length = 4)
-		{
-			List<byte> bytes = new List<byte>();
-			long startOffset = br.BaseStream.Position;
-
-			for (int i = 0; i < length; i++)
-				bytes.Add(br.ReadByte());
-
-			br.BaseStream.Seek(startOffset, SeekOrigin.Begin);
-
-			return Encoding.ASCII.GetString(bytes.ToArray());
 		}
 
 		private void ReadLBL1(BinaryReaderX br)

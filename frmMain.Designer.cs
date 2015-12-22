@@ -59,6 +59,8 @@
 			this.sfdSaveEntity = new System.Windows.Forms.SaveFileDialog();
 			this.lblSubStrings = new System.Windows.Forms.Label();
 			this.txtConcatenated = new System.Windows.Forms.TextBox();
+			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.extractBG4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.stsMain.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -69,6 +71,7 @@
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.lZCompressionToolStripMenuItem,
+            this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
 			this.mnuMain.Name = "mnuMain";
@@ -372,6 +375,21 @@
 			this.txtConcatenated.TabIndex = 15;
 			this.txtConcatenated.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			// 
+			// toolsToolStripMenuItem
+			// 
+			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractBG4ToolStripMenuItem});
+			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+			this.toolsToolStripMenuItem.Text = "&Tools";
+			// 
+			// extractBG4ToolStripMenuItem
+			// 
+			this.extractBG4ToolStripMenuItem.Name = "extractBG4ToolStripMenuItem";
+			this.extractBG4ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.extractBG4ToolStripMenuItem.Text = "&Extract BG4";
+			this.extractBG4ToolStripMenuItem.Click += new System.EventHandler(this.extractBG4ToolStripMenuItem_Click);
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -440,6 +458,8 @@
 		  private System.Windows.Forms.Label lblSubStrings;
 		  private System.Windows.Forms.TextBox txtConcatenated;
 		  private System.Windows.Forms.ToolStripStatusLabel slbActions;
+		  private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem extractBG4ToolStripMenuItem;
     }
 }
 
