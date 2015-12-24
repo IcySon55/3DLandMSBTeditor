@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
 			this.mnuMain = new System.Windows.Forms.MenuStrip();
 			this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -36,7 +35,8 @@
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.lZCompressionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.BG4ExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.decompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,8 +59,6 @@
 			this.sfdSaveEntity = new System.Windows.Forms.SaveFileDialog();
 			this.lblSubStrings = new System.Windows.Forms.Label();
 			this.txtConcatenated = new System.Windows.Forms.TextBox();
-			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.extractBG4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.stsMain.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -70,7 +68,6 @@
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.lZCompressionToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
@@ -131,32 +128,40 @@
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
-			// lZCompressionToolStripMenuItem
+			// toolsToolStripMenuItem
 			// 
-			this.lZCompressionToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BG4ExplorerToolStripMenuItem,
             this.compressToolStripMenuItem,
             this.decompressToolStripMenuItem});
-			this.lZCompressionToolStripMenuItem.Name = "lZCompressionToolStripMenuItem";
-			this.lZCompressionToolStripMenuItem.Size = new System.Drawing.Size(117, 20);
-			this.lZCompressionToolStripMenuItem.Text = "LZ11 &Compression";
+			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+			this.toolsToolStripMenuItem.Text = "&Tools";
+			// 
+			// BG4ExplorerToolStripMenuItem
+			// 
+			this.BG4ExplorerToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
+			this.BG4ExplorerToolStripMenuItem.Name = "BG4ExplorerToolStripMenuItem";
+			this.BG4ExplorerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
+			this.BG4ExplorerToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.BG4ExplorerToolStripMenuItem.Text = "BG4 &Extract";
+			this.BG4ExplorerToolStripMenuItem.Click += new System.EventHandler(this.BG4ExplorerToolStripMenuItem_Click);
 			// 
 			// compressToolStripMenuItem
 			// 
 			this.compressToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
 			this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
 			this.compressToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.compressToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.compressToolStripMenuItem.Text = "&Compress";
-			this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
+			this.compressToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.compressToolStripMenuItem.Text = "LZ11 &Compress";
 			// 
 			// decompressToolStripMenuItem
 			// 
 			this.decompressToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
 			this.decompressToolStripMenuItem.Name = "decompressToolStripMenuItem";
 			this.decompressToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
-			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.decompressToolStripMenuItem.Text = "&Decompress";
-			this.decompressToolStripMenuItem.Click += new System.EventHandler(this.decompressToolStripMenuItem_Click);
+			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.decompressToolStripMenuItem.Text = "LZ11 &Decompress";
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -233,7 +238,7 @@
 			this.hbxHexView.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
 			this.hbxHexView.Size = new System.Drawing.Size(550, 166);
 			this.hbxHexView.StringViewVisible = true;
-			this.hbxHexView.TabIndex = 10;
+			this.hbxHexView.TabIndex = 6;
 			this.hbxHexView.UseFixedBytesPerLine = true;
 			this.hbxHexView.VScrollBarVisible = true;
 			this.hbxHexView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.hbxSelectAll_KeyDown);
@@ -302,7 +307,7 @@
 			this.txtOriginal.Name = "txtOriginal";
 			this.txtOriginal.ReadOnly = true;
 			this.txtOriginal.Size = new System.Drawing.Size(248, 157);
-			this.txtOriginal.TabIndex = 6;
+			this.txtOriginal.TabIndex = 4;
 			this.txtOriginal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			// 
 			// txtEdit
@@ -314,7 +319,7 @@
 			this.txtEdit.Multiline = true;
 			this.txtEdit.Name = "txtEdit";
 			this.txtEdit.Size = new System.Drawing.Size(243, 157);
-			this.txtEdit.TabIndex = 4;
+			this.txtEdit.TabIndex = 3;
 			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
 			// 
@@ -327,7 +332,7 @@
 			this.lstSubStrings.Margin = new System.Windows.Forms.Padding(0, 0, 4, 0);
 			this.lstSubStrings.Name = "lstSubStrings";
 			this.lstSubStrings.Size = new System.Drawing.Size(44, 157);
-			this.lstSubStrings.TabIndex = 7;
+			this.lstSubStrings.TabIndex = 2;
 			this.lstSubStrings.SelectedIndexChanged += new System.EventHandler(this.lstSubStrings_SelectedIndexChanged);
 			// 
 			// lblOriginal
@@ -372,23 +377,8 @@
 			this.txtConcatenated.Name = "txtConcatenated";
 			this.txtConcatenated.ReadOnly = true;
 			this.txtConcatenated.Size = new System.Drawing.Size(549, 95);
-			this.txtConcatenated.TabIndex = 15;
+			this.txtConcatenated.TabIndex = 5;
 			this.txtConcatenated.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
-			// 
-			// toolsToolStripMenuItem
-			// 
-			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.extractBG4ToolStripMenuItem});
-			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-			this.toolsToolStripMenuItem.Text = "&Tools";
-			// 
-			// extractBG4ToolStripMenuItem
-			// 
-			this.extractBG4ToolStripMenuItem.Name = "extractBG4ToolStripMenuItem";
-			this.extractBG4ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.extractBG4ToolStripMenuItem.Text = "&Extract BG4";
-			this.extractBG4ToolStripMenuItem.Click += new System.EventHandler(this.extractBG4ToolStripMenuItem_Click);
 			// 
 			// frmMain
 			// 
@@ -407,7 +397,6 @@
 			this.Controls.Add(this.lblStrings);
 			this.Controls.Add(this.lstStrings);
 			this.Controls.Add(this.mnuMain);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.mnuMain;
 			this.MinimumSize = new System.Drawing.Size(870, 576);
 			this.Name = "frmMain";
@@ -433,10 +422,7 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		  private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem lZCompressionToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ListBox lstStrings;
         private System.Windows.Forms.Label lblStrings;
 		  private System.Windows.Forms.Label lblEdit;
@@ -459,7 +445,9 @@
 		  private System.Windows.Forms.TextBox txtConcatenated;
 		  private System.Windows.Forms.ToolStripStatusLabel slbActions;
 		  private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem extractBG4ToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem BG4ExplorerToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
     }
 }
 

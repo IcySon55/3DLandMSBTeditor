@@ -17,6 +17,7 @@ namespace MsbtEditor
 		public frmMain(string[] args)
 		{
 			InitializeComponent();
+			this.Icon = Properties.Resources.msbteditor;
 
 			if (args.Length > 0 && File.Exists(args[0]))
 				OpenFile(args[0]);
@@ -46,6 +47,8 @@ namespace MsbtEditor
 					e.Cancel = true;
 					break;
 			}
+
+			Settings.Default.Save();
 		}
 
 		private void frmMain_DragEnter(object sender, DragEventArgs e)
@@ -138,6 +141,7 @@ namespace MsbtEditor
 				UpdateForm();
 				Settings.Default.InitialDirectory = new FileInfo(filename).DirectoryName;
 				Settings.Default.Save();
+				Settings.Default.Reload();
 			}
 			else
 			{
@@ -152,6 +156,7 @@ namespace MsbtEditor
 						LoadFile();
 						Settings.Default.InitialDirectory = new FileInfo(ofdOpenFile.FileName).DirectoryName;
 						Settings.Default.Save();
+						Settings.Default.Reload();
 					}
 					catch (Exception ex)
 					{
@@ -167,6 +172,7 @@ namespace MsbtEditor
 		private void LoadFile()
 		{
 			lstStrings.Items.Clear();
+			lstSubStrings.Items.Clear();
 
 			if (_msbt.HasLabels)
 			{
@@ -207,6 +213,7 @@ namespace MsbtEditor
 				_msbt.File = new FileInfo(sfdSaveEntity.FileName);
 				Settings.Default.InitialDirectory = new DirectoryInfo(sfdSaveEntity.FileName).FullName;
 				Settings.Default.Save();
+				Settings.Default.Reload();
 			}
 
 			if (dr == DialogResult.OK)
@@ -244,6 +251,14 @@ namespace MsbtEditor
 
 		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
 		{
+			Entry entry = (Entry)lstStrings.SelectedItem;
+			Value val = _msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex];
+
+			txtEdit.Enabled = val.Editable;
+			txtOriginal.Enabled = val.Editable;
+			txtConcatenated.Enabled = val.Editable;
+			hbxHexView.Enabled = val.Editable;
+
 			UpdateTextView();
 			UpdateOriginalText();
 			UpdateTextPreview();
@@ -308,7 +323,7 @@ namespace MsbtEditor
 			string result = txtEdit.Text;
 
 			Entry entry = (Entry)lstStrings.SelectedItem;
-			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
+			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
@@ -322,7 +337,7 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
 
 			slbAddress.Text = "String: " + (entry.ID + 1) + "/" + (lstSubStrings.SelectedIndex + 1);
 		}
@@ -331,7 +346,7 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex]).Replace("\n", "\r\n");
+			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
 		}
 
 		private void UpdateTextPreview()
@@ -339,8 +354,8 @@ namespace MsbtEditor
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
 			string result = string.Empty;
-			foreach (byte[] value in _msbt.TXT2.Entries[entry.ID].Values)
-				result += Encoding.Unicode.GetString(value).Replace("\n", "\r\n");
+			foreach (Value value in _msbt.TXT2.Entries[entry.ID].Values)
+				result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n");
 
 			txtConcatenated.Text = result;
 		}
@@ -353,7 +368,7 @@ namespace MsbtEditor
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));
-			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex] = bytes.ToArray();
+			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data = bytes.ToArray();
 
 			UpdateTextView();
 			UpdateTextPreview();
@@ -370,7 +385,7 @@ namespace MsbtEditor
 			try
 			{
 				Entry entry = (Entry)lstStrings.SelectedItem;
-				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex]);
+				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data);
 
 				dfbp = new DynamicFileByteProvider(strm);
 				dfbp.Changed += new EventHandler(byteProvider_Changed);
@@ -403,19 +418,16 @@ namespace MsbtEditor
 		}
 
 		// Tools
-		private void extractBG4ToolStripMenuItem_Click(object sender, EventArgs e)
+		private void BG4ExplorerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Title = "Select a BG4 Binary...";
 			ofd.Filter = "BG4 Archive (*.dat)|*.dat|All Files (*.*)|*.*";
 			ofd.InitialDirectory = Settings.Default.InitialDirectory;
-			//ofd.RestoreDirectory = true;
 
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
-				string filename = ofd.FileName;
-
-				if (File.Exists(filename))
+				if (File.Exists(ofd.FileName))
 				{
 					FolderBrowserDialog fbd = new FolderBrowserDialog();
 					fbd.Description = "Select the destination directory to extarct the files into.";
@@ -423,19 +435,14 @@ namespace MsbtEditor
 
 					if (fbd.ShowDialog() == DialogResult.OK)
 					{
-						string directory = fbd.SelectedPath;
-
-						if (Directory.Exists(directory))
+						if (Directory.Exists(fbd.SelectedPath))
 						{
 							bool overwrite = true;
 
-							if (new DirectoryInfo(directory).GetFiles().Length > 0)
+							if (new DirectoryInfo(fbd.SelectedPath).GetFiles().Length > 0)
 								overwrite = MessageBox.Show("Is it OK to overwrite files in the destination directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes ? true : false;
 
-							// Extract
-							BG4 bg4 = new BG4();
-
-							string result = bg4.Extract(filename, directory, overwrite);
+							string result = BG4.Extract(ofd.FileName, fbd.SelectedPath, overwrite);
 
 							MessageBox.Show(result, "BG4 Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 						}

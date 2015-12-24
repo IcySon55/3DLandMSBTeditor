@@ -20,9 +20,14 @@ namespace MsbtEditor
 		}
 	}
 
+	class InvalidBG4Exception : Exception
+	{
+		public InvalidBG4Exception(string message) : base(message) { }
+	}
+
 	class BG4
 	{
-		public string Extract(string filename, string path, bool overwrite = true)
+		public static string Extract(string filename, string path, bool overwrite = true)
 		{
 			string result = "Files successfully extracted.";
 
@@ -40,14 +45,12 @@ namespace MsbtEditor
 
 					// TODO: Decipher header values
 
-					while (br.ReadUInt32() != 0xFFFFFFFF) { } // Jump to the end of the entry
+					while (br.ReadUInt32() != 0xFFFFFFFF) { } // Jump to the end of the header
 					br.ReadBytes(2); // 00 00
 
 					// Loop through file details
 					bool eoh = false;
-
 					List<FileEntry> entries = new List<FileEntry>();
-					List<string> filenames = new List<string>();
 					FileEntry entry = new FileEntry();
 
 					while (!eoh)
@@ -72,6 +75,7 @@ namespace MsbtEditor
 									entry = new FileEntry();
 								}
 
+								// File entry closer
 								if (br.PeekString() == Encoding.ASCII.GetString(new byte[] { 0x00, 0x00, 0x00, 0x80 }))
 									br.ReadBytes(4); // 00 00 00 80
 							}
@@ -81,11 +85,16 @@ namespace MsbtEditor
 						}
 					}
 
+					// Sort the file entries into NameIndex order
+					entries.Sort();
+
 					// Filenames
 					bool eofn = false;
+					List<string> filenames = new List<string>();
+
 					while (!eofn)
 					{
-						if (filenames.Count == entries.Count)
+						if (br.PeekString(2) == Encoding.ASCII.GetString(new byte[] { 0xFF, 0xFF }))
 							eofn = true;
 						else
 						{
@@ -105,9 +114,6 @@ namespace MsbtEditor
 							filenames.Add(name);
 						}
 					}
-
-					// Arrange the file entries in NameIndex order
-					entries.Sort();
 
 					// Extract!
 					for (int i = 0; i < entries.Count; i++)
@@ -142,14 +148,9 @@ namespace MsbtEditor
 			return result;
 		}
 
-		public void Pack(string filename, string path)
+		public static void Pack(string filename, string path)
 		{
-
+			throw new NotImplementedException();
 		}
-	}
-
-	class InvalidBG4Exception : Exception
-	{
-		public InvalidBG4Exception(string message) : base(message) { }
 	}
 }

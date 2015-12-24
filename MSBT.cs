@@ -70,7 +70,7 @@ namespace MsbtEditor
 	class Entry
 	{
 		public UInt32 Length;
-		public List<byte[]> Values = new List<byte[]>();
+		public List<Value> Values = new List<Value>();
 		public byte[] Value;
 		public Int32 ID;
 
@@ -78,6 +78,13 @@ namespace MsbtEditor
 		{
 			return (Length > 0 ? Encoding.ASCII.GetString(Value) : (ID + 1).ToString());
 		}
+	}
+	
+	class Value
+	{
+		public byte[] Data;
+		public bool Editable = true;
+		public bool NullTerminated = true;
 	}
 
 	class MSBT
@@ -93,7 +100,7 @@ namespace MsbtEditor
 		public TXT2 TXT2 = new TXT2();
 		public List<string> SectionOrder = new List<string>();
 
-		byte paddingChar = 0xAB;
+		private byte paddingChar = 0xAB;
 
 		public MSBT(string filename)
 		{
@@ -170,18 +177,8 @@ namespace MsbtEditor
 			LBL1.SectionSize = br.ReadUInt32();
 			LBL1.Unknown1 = br.ReadBytes(8);
 			LBL1.Unknown2 = br.ReadBytes(8);
-			uint startOfLabels = (uint)br.BaseStream.Position + sizeof(UInt32);
-			while (!eoi)
-			{
-				uint temp = br.ReadUInt32();
-				if (temp > 2)
-				{
-					startOfLabels = temp + (uint)offset + (uint)LBL1.Unknown1.Length + (uint)LBL1.Unknown2.Length;
-					eoi = true;
-				}
-			}
-			br.BaseStream.Seek(-sizeof(UInt32), SeekOrigin.Current);
-			LBL1.Unknown3 = br.ReadBytes((int)startOfLabels - (int)br.BaseStream.Position);
+			uint startOfLabels = 0x35C; // Magic LBL1 label start position
+			LBL1.Unknown3 = br.ReadBytes((int)(startOfLabels - br.BaseStream.Position));
 
 			while (br.BaseStream.Position < (offset + LBL1.Identifier.Length + sizeof(UInt32) + LBL1.Unknown1.Length + LBL1.SectionSize))
 			{
@@ -256,9 +253,6 @@ namespace MsbtEditor
 					{
 						byte[] unichar = br.ReadBytes(2);
 
-						if (unichar[0] == paddingChar && unichar[1] == paddingChar)
-							break;
-
 						if (Header.ByteOrderMark[0] == 0xFE)
 							Array.Reverse(unichar);
 
@@ -266,17 +260,41 @@ namespace MsbtEditor
 							result.AddRange(unichar);
 						else
 						{
-							entry.Values.Add(result.ToArray());
+							Value val = new Value();
+							val.Data = result.ToArray();
+
+							if (result.Count == 0)
+								val.Editable = false;
+
+							entry.Values.Add(val);
 							result.Clear();
 						}
 					}
 				}
+
+				// Strange extended string without null termination
+				if (result.Count > 1)
+				{
+					Value finalVal = new Value();
+					finalVal.Data = result.ToArray();
+					finalVal.Editable = false;
+					finalVal.NullTerminated = false;
+					entry.Values.Add(finalVal);
+				}
+
 				entry.ID = i;
 				TXT2.OriginalEntries.Add(entry);
 
+				// Duplicate entries for editing
 				Entry entryEdited = new Entry();
-				foreach (byte[] value in entry.Values)
-					entryEdited.Values.Add(value);
+				foreach (Value value in entry.Values)
+				{
+					Value val = new Value();
+					val.Data = value.Data;
+					val.Editable = value.Editable;
+					val.NullTerminated = value.NullTerminated;
+					entryEdited.Values.Add(val);
+				}
 				entryEdited.Value = entry.Value;
 				entryEdited.ID = entry.ID;
 				TXT2.Entries.Add(entryEdited);
@@ -289,7 +307,11 @@ namespace MsbtEditor
 		{
 			long remainder = br.BaseStream.Position % 16;
 			if (remainder > 0)
+			{
+				paddingChar = br.ReadByte();
+				br.BaseStream.Seek(-1, SeekOrigin.Current);
 				br.BaseStream.Seek(16 - remainder, SeekOrigin.Current);
+			}
 		}
 
 		public bool Save()
@@ -461,9 +483,9 @@ namespace MsbtEditor
 
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
-					foreach (byte[] value in TXT2.Entries[i].Values)
+					foreach (Value value in TXT2.Entries[i].Values)
 					{
-						newSize += (UInt32)(value.Length + 2);
+						newSize += (UInt32)(value.Data.Length + (value.NullTerminated ? 2 : 0));
 					}
 				}
 
@@ -479,8 +501,8 @@ namespace MsbtEditor
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 				{
 					offsets.Add(offsetsLength + runningTotal);
-					foreach (byte[] value in TXT2.Entries[i].Values)
-						runningTotal += ((UInt32)value.Length) + 2;
+					foreach (Value value in TXT2.Entries[i].Values)
+						runningTotal += (UInt32)(value.Data.Length + (value.NullTerminated ? 2 : 0));
 				}
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					bw.Write(offsets[i]);
@@ -489,18 +511,21 @@ namespace MsbtEditor
 					for (int j = 0; j < TXT2.Entries[i].Values.Count; j++)
 						TXT2.OriginalEntries[i].Values[j] = TXT2.Entries[i].Values[j];
 
-					foreach (byte[] value in TXT2.Entries[i].Values)
+					foreach (Value value in TXT2.Entries[i].Values)
 					{
 						if (Header.ByteOrderMark[0] == 0xFF)
-							bw.Write(value);
+							bw.Write(value.Data);
 						else
-							for (int j = 0; j < value.Length; j += 2)
+							for (int j = 0; j < value.Data.Length; j += 2)
 							{
-								bw.Write(value[j + 1]);
-								bw.Write(value[j]);
+								bw.Write(value.Data[j + 1]);
+								bw.Write(value.Data[j]);
 							}
-						bw.Write('\0');
-						bw.Write('\0');
+						if (value.NullTerminated)
+						{
+							bw.Write('\0');
+							bw.Write('\0');
+						}
 					}
 				}
 
