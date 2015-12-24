@@ -7,12 +7,17 @@ using System.Diagnostics;
 
 namespace MsbtEditor
 {
-	class FileEntry
+	class FileEntry : IComparable<FileEntry>
 	{
 		public UInt32 Offset;
 		public UInt32 Size;
 		public UInt32 Unknown1;
 		public UInt16 NameIndex;
+
+		public int CompareTo(FileEntry rhs)
+		{
+			return NameIndex.CompareTo(rhs.NameIndex);
+		}
 	}
 
 	class BG4
@@ -101,13 +106,16 @@ namespace MsbtEditor
 						}
 					}
 
+					// Arrange the file entries in NameIndex order
+					entries.Sort();
+
 					// Extract!
 					for (int i = 0; i < entries.Count; i++)
 					{
 						FileEntry fe = entries[i];
 
 						FileInfo fi = new FileInfo(filename);
-						FileStream fsr = new FileStream(Path.Combine(path, fi.Name.TrimEnd(fi.Extension.ToCharArray()) + "_" + fe.NameIndex + ".bin"), FileMode.Create, FileAccess.Write, FileShare.None);
+						FileStream fsr = new FileStream(Path.Combine(path, filenames[i] + ".bin"), FileMode.Create, FileAccess.Write, FileShare.None);
 						BinaryWriterX bw = new BinaryWriterX(fsr);
 
 						br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);

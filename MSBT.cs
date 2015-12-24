@@ -42,7 +42,10 @@ namespace MsbtEditor
 		public byte[] Identifier; // ATR1
 		public UInt32 SectionSize; // Begins after Unknown1
 		public byte[] Unknown1; // Always 0x0000 0000
+		public UInt32 NumberOfAttributes;
 		public byte[] Unknown2;
+
+		public List<UInt32> Attributes;
 	}
 
 	class TSY1
@@ -103,6 +106,7 @@ namespace MsbtEditor
 
 				// Initialize Members
 				LBL1.Labels = new List<Entry>();
+				ATR1.Attributes = new List<UInt32>();
 				TXT2.OriginalEntries = new List<Entry>();
 				TXT2.Entries = new List<Entry>();
 
@@ -208,7 +212,8 @@ namespace MsbtEditor
 			ATR1.Identifier = br.ReadBytes(4);
 			ATR1.SectionSize = br.ReadUInt32();
 			ATR1.Unknown1 = br.ReadBytes(8);
-			ATR1.Unknown2 = br.ReadBytes((int)ATR1.SectionSize); // Read in the entire section at once since we don't know what it's for
+			ATR1.NumberOfAttributes = br.ReadUInt32();
+			ATR1.Unknown2 = br.ReadBytes((int)ATR1.SectionSize - sizeof(UInt32)); // Read in the rest of the section at once since we don't know what it's for
 
 			PaddingSeek(br);
 		}
@@ -407,6 +412,7 @@ namespace MsbtEditor
 				bw.Write(ATR1.Identifier);
 				bw.Write(ATR1.SectionSize);
 				bw.Write(ATR1.Unknown1);
+				bw.Write(ATR1.NumberOfAttributes);
 				bw.Write(ATR1.Unknown2);
 
 				PaddingWrite(bw);

@@ -136,7 +136,7 @@ namespace MsbtEditor
 				_hasChanges = false;
 				LoadFile();
 				UpdateForm();
-				Settings.Default.InitialDirectory = new DirectoryInfo(filename).FullName;
+				Settings.Default.InitialDirectory = new FileInfo(filename).DirectoryName;
 				Settings.Default.Save();
 			}
 			else
@@ -150,7 +150,7 @@ namespace MsbtEditor
 						_fileOpen = true;
 						_hasChanges = false;
 						LoadFile();
-						Settings.Default.InitialDirectory = new DirectoryInfo(ofdOpenFile.FileName).FullName;
+						Settings.Default.InitialDirectory = new FileInfo(ofdOpenFile.FileName).DirectoryName;
 						Settings.Default.Save();
 					}
 					catch (Exception ex)
@@ -409,7 +409,7 @@ namespace MsbtEditor
 			ofd.Title = "Select a BG4 Binary...";
 			ofd.Filter = "BG4 Archive (*.dat)|*.dat|All Files (*.*)|*.*";
 			ofd.InitialDirectory = Settings.Default.InitialDirectory;
-			ofd.RestoreDirectory = true;
+			//ofd.RestoreDirectory = true;
 
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
