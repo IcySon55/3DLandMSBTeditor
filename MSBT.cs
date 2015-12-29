@@ -106,7 +106,7 @@ namespace MsbtEditor
 		{
 			File = new FileInfo(filename);
 
-			if (File.Exists)
+			if (File.Exists && filename.Length > 0)
 			{
 				FileStream fs = System.IO.File.Open(File.FullName, FileMode.Open, FileAccess.Read, FileShare.None);
 				BinaryReaderX br = new BinaryReaderX(fs);

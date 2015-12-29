@@ -33,7 +33,7 @@ namespace MsbtEditor
 		{
 			string result = "Files successfully extracted.";
 
-			if (File.Exists(filename))
+			if (File.Exists(filename) && new FileInfo(filename).Length > 0)
 			{
 				FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.None);
 				BinaryReaderX br = new BinaryReaderX(fs);
@@ -105,21 +105,24 @@ namespace MsbtEditor
 					for (int i = 0; i < entries.Count; i++)
 					{
 						FileEntry fe = entries[i];
-						string extension = (Regex.IsMatch(filenames[i], @"\..*?$") ? string.Empty : ".bin");
+						string extension = (!Regex.IsMatch(filenames[i], @"\..*?$") ? ".bin" : string.Empty);
 
-						br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);
-						magic = Encoding.ASCII.GetString(br.ReadBytes(8));
+						if (extension != string.Empty)
+						{
+							br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);
+							magic = Encoding.ASCII.GetString(br.ReadBytes(8));
 
-						if (magic.StartsWith("MsgStdBn"))
-							extension = ".msbt";
-						else if (magic.StartsWith("BCH"))
-							extension = ".bch";
-						else if (magic.StartsWith("PTX"))
-							extension = ".ptx";
+							if (magic.StartsWith("MsgStdBn"))
+								extension = ".msbt";
+							else if (magic.StartsWith("BCH"))
+								extension = ".bch";
+							else if (magic.StartsWith("PTX"))
+								extension = ".ptx";
 
-						// TODO: Add more known magic/extension pairs
+							// TODO: Add more known magic/extension pairs
+						}
 
-						Debug.Print("[" + fe.Offset.ToString("X4") + "] " + fe.NameIndex + " (" + fe.Unknown1 + ") " + filenames[i] + extension);
+						Debug.Print("[" + fe.Offset.ToString("X8") + "] " + fe.NameIndex + " (" + fe.Unknown1 + ") " + filenames[i] + extension);
 
 						FileInfo fi = new FileInfo(filename);
 						FileStream fsr = new FileStream(Path.Combine(path, filenames[i] + extension), FileMode.Create, FileAccess.Write, FileShare.None);

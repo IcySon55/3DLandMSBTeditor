@@ -81,36 +81,6 @@ namespace MsbtEditor
 			SaveFile(true);
 		}
 
-		private void compressToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			try
-			{
-				OpenFileDialog load = new OpenFileDialog();
-				if (load.ShowDialog() != DialogResult.OK) return;
-				YATA.dsdecmp.Compress(load.FileName, load.FileName + ".lz");
-				MessageBox.Show("Done", "LZ11 Compress");
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message, "LZ11 Compress");
-			}
-		}
-
-		private void decompressToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			try
-			{
-				OpenFileDialog load = new OpenFileDialog();
-				if (load.ShowDialog() != DialogResult.OK) return;
-				YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
-				MessageBox.Show("Done", "LZ11 Decompress");
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message, "LZ11 Decompress");
-			}
-		}
-
 		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			MessageBox.Show(Settings.Default.ApplicationName + "\r\nCreated by IcySon55 using Exelix11's original as a base.", "About " + Settings.Default.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -226,7 +196,7 @@ namespace MsbtEditor
 			if ((_msbt.File == null || saveAs) && dr == DialogResult.OK)
 			{
 				_msbt.File = new FileInfo(sfdSaveEntity.FileName);
-				Settings.Default.InitialDirectory = new DirectoryInfo(sfdSaveEntity.FileName).FullName;
+				Settings.Default.InitialDirectory = new FileInfo(sfdSaveEntity.FileName).DirectoryName;
 				Settings.Default.Save();
 				Settings.Default.Reload();
 			}
@@ -438,23 +408,21 @@ namespace MsbtEditor
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Title = "Select a BG4 Binary...";
 			ofd.Filter = "BG4 Archive (*.dat)|*.dat|All Files (*.*)|*.*";
-			ofd.InitialDirectory = Settings.Default.InitialDirectory;
+			ofd.InitialDirectory = Settings.Default.BG4OpenDirectory;
 
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
-				Settings.Default.Save();
-				Settings.Default.Reload();
+				Settings.Default.BG4OpenDirectory = new FileInfo(ofd.FileName).DirectoryName;
 
 				if (File.Exists(ofd.FileName))
 				{
 					FolderBrowserDialog fbd = new FolderBrowserDialog();
 					fbd.Description = "Select the destination directory to extarct the files into.";
-					fbd.SelectedPath = Settings.Default.InitialDirectory;
+					fbd.SelectedPath = Settings.Default.BG4ExtractDirectory;
 
 					if (fbd.ShowDialog() == DialogResult.OK)
 					{
-						Settings.Default.Save();
-						Settings.Default.Reload();
+						Settings.Default.BG4ExtractDirectory = fbd.SelectedPath;
 
 						if (Directory.Exists(fbd.SelectedPath))
 						{
@@ -469,6 +437,39 @@ namespace MsbtEditor
 						}
 					}
 				}
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
+		}
+
+		private void compressToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				OpenFileDialog load = new OpenFileDialog();
+				if (load.ShowDialog() != DialogResult.OK) return;
+				YATA.dsdecmp.Compress(load.FileName, load.FileName + ".lz");
+				MessageBox.Show("Done", "LZ11 Compress");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "LZ11 Compress");
+			}
+		}
+
+		private void decompressToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				OpenFileDialog load = new OpenFileDialog();
+				if (load.ShowDialog() != DialogResult.OK) return;
+				YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
+				MessageBox.Show("Done", "LZ11 Decompress");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "LZ11 Decompress");
 			}
 		}
 	}
