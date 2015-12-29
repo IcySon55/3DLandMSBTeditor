@@ -154,6 +154,7 @@
 			this.compressToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
 			this.compressToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
 			this.compressToolStripMenuItem.Text = "LZ11 &Compress";
+			this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
 			// 
 			// decompressToolStripMenuItem
 			// 
@@ -162,6 +163,7 @@
 			this.decompressToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
 			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
 			this.decompressToolStripMenuItem.Text = "LZ11 &Decompress";
+			this.decompressToolStripMenuItem.Click += new System.EventHandler(this.decompressToolStripMenuItem_Click);
 			// 
 			// helpToolStripMenuItem
 			// 

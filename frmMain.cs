@@ -25,6 +25,7 @@ namespace MsbtEditor
 
 		private void frmMain_Load(object sender, EventArgs e)
 		{
+			Settings.Default.Upgrade();
 			slbAddress.Text = string.Empty;
 			slbActions.Text = string.Empty;
 			slbStringCount.Text = string.Empty;
@@ -82,18 +83,32 @@ namespace MsbtEditor
 
 		private void compressToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog load = new OpenFileDialog();
-			if (load.ShowDialog() != DialogResult.OK) return;
-			YATA.dsdecmp.Compress(load.FileName, load.FileName + ".lz");
-			MessageBox.Show("Done");
+			try
+			{
+				OpenFileDialog load = new OpenFileDialog();
+				if (load.ShowDialog() != DialogResult.OK) return;
+				YATA.dsdecmp.Compress(load.FileName, load.FileName + ".lz");
+				MessageBox.Show("Done", "LZ11 Compress");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "LZ11 Compress");
+			}
 		}
 
 		private void decompressToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog load = new OpenFileDialog();
-			if (load.ShowDialog() != DialogResult.OK) return;
-			YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
-			MessageBox.Show("Done");
+			try
+			{
+				OpenFileDialog load = new OpenFileDialog();
+				if (load.ShowDialog() != DialogResult.OK) return;
+				YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
+				MessageBox.Show("Done", "LZ11 Decompress");
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "LZ11 Decompress");
+			}
 		}
 
 		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -427,6 +442,9 @@ namespace MsbtEditor
 
 			if (ofd.ShowDialog() == DialogResult.OK)
 			{
+				Settings.Default.Save();
+				Settings.Default.Reload();
+
 				if (File.Exists(ofd.FileName))
 				{
 					FolderBrowserDialog fbd = new FolderBrowserDialog();
@@ -435,6 +453,9 @@ namespace MsbtEditor
 
 					if (fbd.ShowDialog() == DialogResult.OK)
 					{
+						Settings.Default.Save();
+						Settings.Default.Reload();
+
 						if (Directory.Exists(fbd.SelectedPath))
 						{
 							bool overwrite = true;

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace MsbtEditor
 {
@@ -13,6 +14,7 @@ namespace MsbtEditor
 		public UInt32 Size;
 		public UInt32 Unknown1;
 		public UInt16 NameIndex;
+		public bool Compressed;
 
 		public int CompareTo(FileEntry rhs)
 		{
@@ -43,52 +45,35 @@ namespace MsbtEditor
 					if (magic != "BG4\0")
 						throw new InvalidBG4Exception("The file provided is not a valid BG4 archive.");
 
-					// TODO: Decipher header values
+					ushort Constant1 = br.ReadUInt16();
+					ushort NumberOfHeaders = br.ReadUInt16();
+					uint SizeOfHeaders = br.ReadUInt32();
+					ushort NumberOfHeadersDerived = br.ReadUInt16();
+					ushort NumberOfHeadersMultiplier = br.ReadUInt16();
 
-					while (br.ReadUInt32() != 0xFFFFFFFF) { } // Jump to the end of the header
-					br.ReadBytes(2); // 00 00
-
-					// Loop through file details
-					bool eoh = false;
+					// Read in file headers
 					List<FileEntry> entries = new List<FileEntry>();
 					FileEntry entry = new FileEntry();
 
-					while (!eoh)
+					for (int i = 0; i < NumberOfHeaders; i++)
 					{
-						if (br.PeekString(10) == "(invalid)\0")
-						{
-							br.ReadBytes(10);
-							eoh = true;
-						}
-						else
-						{
-							while (br.PeekString() != Encoding.ASCII.GetString(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }))
-							{
-								entry.Offset = br.ReadUInt32();
+						uint offsetTemp = br.ReadUInt32();
+						if ((offsetTemp & 0x80000000) == 0x80000000) entry.Compressed = true;
+						entry.Offset = entry.Compressed ? (offsetTemp ^ 0x80000000) : offsetTemp;
+						entry.Size = br.ReadUInt32();
+						entry.Unknown1 = br.ReadUInt32();
+						entry.NameIndex = br.ReadUInt16();
 
-								if (entry.Offset > 0)
-								{
-									entry.Size = br.ReadUInt32();
-									entry.Unknown1 = br.ReadUInt32();
-									entry.NameIndex = br.ReadUInt16();
-									entries.Add(entry);
-									entry = new FileEntry();
-								}
+						if (entry.Unknown1 != 0xFFFFFFFF)
+							entries.Add(entry);
 
-								// File entry closer
-								if (br.PeekString() == Encoding.ASCII.GetString(new byte[] { 0x00, 0x00, 0x00, 0x80 }))
-									br.ReadBytes(4); // 00 00 00 80
-							}
-
-							br.ReadBytes(4); // FF FF FF FF
-							br.ReadBytes(2); // 00 00
-						}
+						entry = new FileEntry();
 					}
 
 					// Sort the file entries into NameIndex order
 					entries.Sort();
 
-					// Filenames
+					// Read in file names
 					bool eofn = false;
 					List<string> filenames = new List<string>();
 
@@ -111,7 +96,8 @@ namespace MsbtEditor
 									name += (char)chr;
 							}
 
-							filenames.Add(name);
+							if (name != "(invalid)")
+								filenames.Add(name);
 						}
 					}
 
@@ -119,9 +105,24 @@ namespace MsbtEditor
 					for (int i = 0; i < entries.Count; i++)
 					{
 						FileEntry fe = entries[i];
+						string extension = (Regex.IsMatch(filenames[i], @"\..*?$") ? string.Empty : ".bin");
+
+						br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);
+						magic = Encoding.ASCII.GetString(br.ReadBytes(8));
+
+						if (magic.StartsWith("MsgStdBn"))
+							extension = ".msbt";
+						else if (magic.StartsWith("BCH"))
+							extension = ".bch";
+						else if (magic.StartsWith("PTX"))
+							extension = ".ptx";
+
+						// TODO: Add more known magic/extension pairs
+
+						Debug.Print("[" + fe.Offset.ToString("X4") + "] " + fe.NameIndex + " (" + fe.Unknown1 + ") " + filenames[i] + extension);
 
 						FileInfo fi = new FileInfo(filename);
-						FileStream fsr = new FileStream(Path.Combine(path, filenames[i] + ".bin"), FileMode.Create, FileAccess.Write, FileShare.None);
+						FileStream fsr = new FileStream(Path.Combine(path, filenames[i] + extension), FileMode.Create, FileAccess.Write, FileShare.None);
 						BinaryWriterX bw = new BinaryWriterX(fsr);
 
 						br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);
@@ -129,7 +130,7 @@ namespace MsbtEditor
 						bw.Close();
 					}
 
-					result = entries.Count + " files successfully extracted!";
+					result = NumberOfHeaders + " header(s) were scanned and " + entries.Count + " files were successfully extracted!";
 				}
 				catch (InvalidBG4Exception ibex)
 				{
