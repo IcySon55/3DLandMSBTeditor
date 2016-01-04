@@ -146,7 +146,7 @@
 			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
 			this.exportToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
 			this.exportToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-			this.exportToolStripMenuItem.Text = "&Export";
+			this.exportToolStripMenuItem.Text = "&Export to CSV";
 			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
 			// 
 			// BG4ExplorerToolStripMenuItem
