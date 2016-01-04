@@ -388,6 +388,7 @@ namespace MsbtEditor
 
 			saveToolStripMenuItem.Enabled = _fileOpen;
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
+			exportToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
 			lstSubStrings.Enabled = _fileOpen;
@@ -403,6 +404,76 @@ namespace MsbtEditor
 		}
 
 		// Tools
+		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			List<string> row = new List<string>();
+			if (_msbt.HasLabels)
+			{
+				sb.AppendLine("LabelOrder,Label,StringOrder,String");
+
+				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
+				{
+					Entry label = _msbt.LBL1.Labels[i];
+
+					// Label
+					row.Add((i + 1).ToString());
+					row.Add(label.ToString());
+
+					// Entry
+					row.Add(label.ID.ToString());
+					string result = string.Empty;
+					foreach (Value value in _msbt.TXT2.Entries[label.ID].Values)
+						result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n").Replace("\"", "\"\"");
+					row.Add("\"" + result + "\"");
+
+					sb.AppendLine(String.Join(",", row.ToArray()));
+					row.Clear();
+				}
+			}
+			else
+			{
+				sb.AppendLine("StringOrder,String");
+
+				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
+				{
+					Entry entry = _msbt.TXT2.Entries[i];
+
+					// Entry
+					row.Add((i + 1).ToString());
+					string result = string.Empty;
+					foreach (Value value in entry.Values)
+						result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n").Replace("\"", "\"\"");
+					row.Add("\"" + result + "\"");
+
+					sb.AppendLine(String.Join(",", row.ToArray()));
+					row.Clear();
+				}
+			}
+
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Title = "Saving ";
+			sfd.Filter = "Comma Separated Values (*.csv)|*.csv";
+			sfd.InitialDirectory = Settings.Default.InitialDirectory;
+
+			if (sfd.ShowDialog() == DialogResult.OK)
+			{
+				try
+				{
+					FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
+					BinaryWriter bw = new BinaryWriter(fs);
+					bw.Write(new byte[] { 0xEF, 0xBB, 0xBF });
+					bw.Write(sb.ToString().ToCharArray());
+					bw.Close();
+				}
+				catch (IOException ioex)
+				{
+					MessageBox.Show(ioex.Message, "File Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+
 		private void BG4ExplorerToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();

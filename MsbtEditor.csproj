@@ -100,6 +100,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -113,6 +114,7 @@
     <Content Include="images\menu-down.png" />
     <Content Include="images\menu-exit.png" />
     <Content Include="images\menu-export.png" />
+    <None Include="images\menu-extract.png" />
     <Content Include="images\menu-field-properties.png" />
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />

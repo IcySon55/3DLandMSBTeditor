@@ -41,7 +41,7 @@ namespace MsbtEditor
 			if (ByteOrder == ByteOrder.LittleEndian)
 				return base.ReadInt32();
 			else
-				return BitConverter.ToInt16(base.ReadBytes(4).Reverse().ToArray(), 0);
+				return BitConverter.ToInt32(base.ReadBytes(4).Reverse().ToArray(), 0);
 		}
 
 		public override long ReadInt64()
@@ -49,7 +49,7 @@ namespace MsbtEditor
 			if (ByteOrder == ByteOrder.LittleEndian)
 				return base.ReadInt64();
 			else
-				return BitConverter.ToInt16(base.ReadBytes(8).Reverse().ToArray(), 0);
+				return BitConverter.ToInt64(base.ReadBytes(8).Reverse().ToArray(), 0);
 		}
 
 		public override ushort ReadUInt16()
@@ -65,7 +65,7 @@ namespace MsbtEditor
 			if (ByteOrder == ByteOrder.LittleEndian)
 				return base.ReadUInt32();
 			else
-				return BitConverter.ToUInt16(base.ReadBytes(4).Reverse().ToArray(), 0);
+				return BitConverter.ToUInt32(base.ReadBytes(4).Reverse().ToArray(), 0);
 		}
 
 		public override ulong ReadUInt64()
@@ -73,7 +73,7 @@ namespace MsbtEditor
 			if (ByteOrder == ByteOrder.LittleEndian)
 				return base.ReadUInt64();
 			else
-				return BitConverter.ToUInt16(base.ReadBytes(8).Reverse().ToArray(), 0);
+				return BitConverter.ToUInt64(base.ReadBytes(8).Reverse().ToArray(), 0);
 		}
 
 		public string PeekString(int length = 4)

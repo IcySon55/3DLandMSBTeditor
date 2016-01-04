@@ -171,7 +171,6 @@ namespace MsbtEditor
 
 		private void ReadLBL1(BinaryReaderX br)
 		{
-			bool eoi = false;
 			long offset = br.BaseStream.Position;
 			LBL1.Identifier = br.ReadBytes(4);
 			LBL1.SectionSize = br.ReadUInt32();

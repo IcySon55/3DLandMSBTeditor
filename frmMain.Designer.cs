@@ -36,6 +36,7 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.BG4ExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.decompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -131,6 +132,7 @@
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportToolStripMenuItem,
             this.BG4ExplorerToolStripMenuItem,
             this.compressToolStripMenuItem,
             this.decompressToolStripMenuItem});
@@ -138,13 +140,22 @@
 			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
 			this.toolsToolStripMenuItem.Text = "&Tools";
 			// 
+			// exportToolStripMenuItem
+			// 
+			this.exportToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
+			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+			this.exportToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+			this.exportToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+			this.exportToolStripMenuItem.Text = "&Export";
+			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+			// 
 			// BG4ExplorerToolStripMenuItem
 			// 
-			this.BG4ExplorerToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
+			this.BG4ExplorerToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_extract;
 			this.BG4ExplorerToolStripMenuItem.Name = "BG4ExplorerToolStripMenuItem";
 			this.BG4ExplorerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
 			this.BG4ExplorerToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-			this.BG4ExplorerToolStripMenuItem.Text = "BG4 &Extract";
+			this.BG4ExplorerToolStripMenuItem.Text = "BG4 E&xtract";
 			this.BG4ExplorerToolStripMenuItem.Click += new System.EventHandler(this.BG4ExplorerToolStripMenuItem_Click);
 			// 
 			// compressToolStripMenuItem
@@ -450,6 +461,7 @@
 		  private System.Windows.Forms.ToolStripMenuItem BG4ExplorerToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
     }
 }
 
