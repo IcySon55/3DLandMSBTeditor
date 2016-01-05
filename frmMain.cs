@@ -417,7 +417,7 @@ namespace MsbtEditor
 					row.Add(label.ToString());
 
 					// Entry
-					row.Add(label.ID.ToString());
+					row.Add((label.ID + 1).ToString());
 					row.Add("\"" + _msbt.TXT2.Entries[label.ID].Preview().Replace("\"", "\"\"") + "\"");
 
 					sb.AppendLine(String.Join(",", row.ToArray()));
