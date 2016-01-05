@@ -18,6 +18,7 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * Others may be supported, need feedback.
 
 ### Other Features
+* Find - I've added the ability to search for strings in the file making translation that much easier.
 * Export CSV - Exports the currently open file and any changes made to a CSV file.
 * BG4 Extraction - Extract files from within BG4 archives found in games like Mario & Luigi Paper Jam.
 * LZ11 De/Compression - Compress and Decompress files using LZ11. Held onto this feature from Exelix11's original version.
