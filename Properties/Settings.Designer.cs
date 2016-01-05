@@ -70,6 +70,7 @@ namespace MsbtEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool MatchCase {
             get {
                 return ((bool)(this["MatchCase"]));
