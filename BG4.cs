@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace MsbtEditor
 {
-	class FileEntry : IComparable<FileEntry>
+	public class FileEntry : IComparable<FileEntry>
 	{
 		public UInt32 Offset;
 		public UInt32 Size;
@@ -22,12 +22,12 @@ namespace MsbtEditor
 		}
 	}
 
-	class InvalidBG4Exception : Exception
+	public class InvalidBG4Exception : Exception
 	{
 		public InvalidBG4Exception(string message) : base(message) { }
 	}
 
-	class BG4
+	public class BG4
 	{
 		public static string Extract(string filename, string path, bool overwrite = true)
 		{

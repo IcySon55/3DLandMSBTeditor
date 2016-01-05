@@ -17,7 +17,7 @@ namespace MsbtEditor
 		public frmMain(string[] args)
 		{
 			InitializeComponent();
-			this.Icon = Properties.Resources.msbteditor;
+			this.Icon = Resources.msbteditor;
 
 			if (args.Length > 0 && File.Exists(args[0]))
 				OpenFile(args[0]);
@@ -336,13 +336,7 @@ namespace MsbtEditor
 
 		private void UpdateTextPreview()
 		{
-			Entry entry = (Entry)lstStrings.SelectedItem;
-
-			string result = string.Empty;
-			foreach (Value value in _msbt.TXT2.Entries[entry.ID].Values)
-				result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n");
-
-			txtConcatenated.Text = result;
+			txtConcatenated.Text = _msbt.TXT2.Entries[((Entry)lstStrings.SelectedItem).ID].Preview();
 		}
 
 		protected void byteProvider_Changed(object sender, EventArgs e)
@@ -388,6 +382,7 @@ namespace MsbtEditor
 
 			saveToolStripMenuItem.Enabled = _fileOpen;
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
+			findToolStripMenuItem.Enabled = _fileOpen;
 			exportToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
@@ -423,10 +418,7 @@ namespace MsbtEditor
 
 					// Entry
 					row.Add(label.ID.ToString());
-					string result = string.Empty;
-					foreach (Value value in _msbt.TXT2.Entries[label.ID].Values)
-						result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n").Replace("\"", "\"\"");
-					row.Add("\"" + result + "\"");
+					row.Add("\"" + _msbt.TXT2.Entries[label.ID].Preview().Replace("\"", "\"\"") + "\"");
 
 					sb.AppendLine(String.Join(",", row.ToArray()));
 					row.Clear();
@@ -442,10 +434,7 @@ namespace MsbtEditor
 
 					// Entry
 					row.Add((i + 1).ToString());
-					string result = string.Empty;
-					foreach (Value value in entry.Values)
-						result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n").Replace("\"", "\"\"");
-					row.Add("\"" + result + "\"");
+					row.Add("\"" + entry.Preview().Replace("\"", "\"\"") + "\"");
 
 					sb.AppendLine(String.Join(",", row.ToArray()));
 					row.Clear();
@@ -541,6 +530,19 @@ namespace MsbtEditor
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message, "LZ11 Decompress");
+			}
+		}
+
+		private void findToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			frmSearch search = new frmSearch();
+			search.Msbt = _msbt;
+			search.StartPosition = FormStartPosition.CenterParent;
+			search.ShowDialog();
+
+			if (search.Return != null)
+			{
+				lstStrings.SelectedItem = search.Return;
 			}
 		}
 	}

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MsbtEditor
 {
-	class Header
+	public class Header
 	{
 		public byte[] Identifier; // MsgStdBn
 		public byte[] ByteOrderMark;
@@ -18,7 +18,7 @@ namespace MsbtEditor
 		public byte[] Unknown4; // Always 0x0000 0000 0000 0000 0000
 	}
 
-	class LBL1
+	public class LBL1
 	{
 		public byte[] Identifier; // LBL1
 		public UInt32 SectionSize; // Begins after Unknown1
@@ -29,7 +29,7 @@ namespace MsbtEditor
 		public List<Entry> Labels;
 	}
 
-	class NLI1
+	public class NLI1
 	{
 		public byte[] Identifier; // NLI1
 		public UInt32 SectionSize; // Begins after Unknown1
@@ -37,7 +37,7 @@ namespace MsbtEditor
 		public byte[] Unknown2; // Tons of unknown data
 	}
 
-	class ATR1
+	public class ATR1
 	{
 		public byte[] Identifier; // ATR1
 		public UInt32 SectionSize; // Begins after Unknown1
@@ -48,7 +48,7 @@ namespace MsbtEditor
 		public List<UInt32> Attributes;
 	}
 
-	class TSY1
+	public class TSY1
 	{
 		public byte[] Identifier; // TSY1
 		public UInt32 SectionSize; // Begins after Unknown1
@@ -56,7 +56,7 @@ namespace MsbtEditor
 		public byte[] Unknown2;
 	}
 
-	class TXT2
+	public class TXT2
 	{
 		public byte[] Identifier; // TXT2
 		public UInt32 SectionSize; // Begins after Unknown1
@@ -67,7 +67,7 @@ namespace MsbtEditor
 		public List<Entry> Entries;
 	}
 
-	class Entry
+	public class Entry
 	{
 		public UInt32 Length;
 		public List<Value> Values = new List<Value>();
@@ -78,16 +78,24 @@ namespace MsbtEditor
 		{
 			return (Length > 0 ? Encoding.ASCII.GetString(Value) : (ID + 1).ToString());
 		}
+
+		public string Preview()
+		{
+			string result = string.Empty;
+			foreach (Value value in Values)
+				result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n");
+			return result;
+		}
 	}
-	
-	class Value
+
+	public class Value
 	{
 		public byte[] Data;
 		public bool Editable = true;
 		public bool NullTerminated = true;
 	}
 
-	class MSBT
+	public class MSBT
 	{
 		public FileInfo File { get; set; }
 		public bool HasLabels { get; set; }

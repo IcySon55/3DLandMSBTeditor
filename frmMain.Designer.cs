@@ -35,6 +35,8 @@
 			this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.BG4ExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,6 +71,7 @@
 			// 
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
@@ -129,6 +132,23 @@
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
+			// editToolStripMenuItem
+			// 
+			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.findToolStripMenuItem});
+			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+			this.editToolStripMenuItem.Text = "&Edit";
+			// 
+			// findToolStripMenuItem
+			// 
+			this.findToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_find;
+			this.findToolStripMenuItem.Name = "findToolStripMenuItem";
+			this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+			this.findToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.findToolStripMenuItem.Text = "&Find";
+			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
+			// 
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -155,7 +175,7 @@
 			this.BG4ExplorerToolStripMenuItem.Name = "BG4ExplorerToolStripMenuItem";
 			this.BG4ExplorerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
 			this.BG4ExplorerToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-			this.BG4ExplorerToolStripMenuItem.Text = "BG4 E&xtract";
+			this.BG4ExplorerToolStripMenuItem.Text = "E&xtract BG4";
 			this.BG4ExplorerToolStripMenuItem.Click += new System.EventHandler(this.BG4ExplorerToolStripMenuItem_Click);
 			// 
 			// compressToolStripMenuItem
@@ -462,6 +482,8 @@
 		  private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
     }
 }
 

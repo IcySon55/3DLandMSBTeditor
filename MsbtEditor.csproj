@@ -70,6 +70,12 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmSearch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSearch.Designer.cs">
+      <DependentUpon>frmSearch.cs</DependentUpon>
+    </Compile>
     <Compile Include="LZ11.cs" />
     <Compile Include="MSBT.cs" />
     <Compile Include="Program.cs" />
@@ -80,6 +86,9 @@
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmSearch.resx">
+      <DependentUpon>frmSearch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -107,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Be.Windows.Forms.HexBox.dll" />
+    <None Include="images\find.ico" />
     <Content Include="images\menu-about.png" />
     <Content Include="images\menu-add.png" />
     <Content Include="images\menu-copy.png" />
@@ -116,6 +126,7 @@
     <Content Include="images\menu-export.png" />
     <None Include="images\menu-extract.png" />
     <Content Include="images\menu-field-properties.png" />
+    <None Include="images\menu-find.png" />
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />
     <Content Include="images\menu-paste.png" />
