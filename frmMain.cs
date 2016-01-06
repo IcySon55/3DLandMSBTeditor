@@ -222,10 +222,10 @@ namespace MsbtEditor
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
 			lstSubStrings.Items.Clear();
-			for (int i = 0; i < _msbt.TXT2.Entries[entry.ID].Values.Count; i++)
+			for (int i = 0; i < _msbt.TXT2.Entries[entry.Index].Values.Count; i++)
 			{
 				Entry subEntry = new Entry();
-				subEntry.ID = i;
+				subEntry.Index = i;
 
 				lstSubStrings.Items.Add(subEntry);
 
@@ -237,7 +237,7 @@ namespace MsbtEditor
 		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
-			Value val = _msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex];
+			Value val = _msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex];
 
 			txtEdit.Enabled = val.Editable;
 			txtOriginal.Enabled = val.Editable;
@@ -308,7 +308,7 @@ namespace MsbtEditor
 			string result = txtEdit.Text;
 
 			Entry entry = (Entry)lstStrings.SelectedItem;
-			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
+			_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
@@ -322,21 +322,21 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
+			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
 
-			slbAddress.Text = "String: " + (entry.ID + 1) + "/" + (lstSubStrings.SelectedIndex + 1);
+			slbAddress.Text = "String: " + (entry.Index + 1) + "/" + (lstSubStrings.SelectedIndex + 1);
 		}
 
 		private void UpdateOriginalText()
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.ID].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
+			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
 		}
 
 		private void UpdateTextPreview()
 		{
-			txtConcatenated.Text = _msbt.TXT2.Entries[((Entry)lstStrings.SelectedItem).ID].Preview();
+			txtConcatenated.Text = _msbt.TXT2.Entries[((Entry)lstStrings.SelectedItem).Index].Preview();
 		}
 
 		protected void byteProvider_Changed(object sender, EventArgs e)
@@ -347,7 +347,7 @@ namespace MsbtEditor
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));
-			_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data = bytes.ToArray();
+			_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data = bytes.ToArray();
 
 			UpdateTextView();
 			UpdateTextPreview();
@@ -364,7 +364,7 @@ namespace MsbtEditor
 			try
 			{
 				Entry entry = (Entry)lstStrings.SelectedItem;
-				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.ID].Values[lstSubStrings.SelectedIndex].Data);
+				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data);
 
 				dfbp = new DynamicFileByteProvider(strm);
 				dfbp.Changed += new EventHandler(byteProvider_Changed);
@@ -417,8 +417,8 @@ namespace MsbtEditor
 					row.Add(label.ToString());
 
 					// Entry
-					row.Add((label.ID + 1).ToString());
-					row.Add("\"" + _msbt.TXT2.Entries[label.ID].Preview().Replace("\"", "\"\"") + "\"");
+					row.Add((label.Index + 1).ToString());
+					row.Add("\"" + _msbt.TXT2.Entries[label.Index].Preview().Replace("\"", "\"\"") + "\"");
 
 					sb.AppendLine(String.Join(",", row.ToArray()));
 					row.Clear();

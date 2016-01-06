@@ -72,11 +72,11 @@ namespace MsbtEditor
 		public UInt32 Length;
 		public List<Value> Values = new List<Value>();
 		public byte[] Value;
-		public Int32 ID;
+		public Int32 Index;
 
 		public override string ToString()
 		{
-			return (Length > 0 ? Encoding.ASCII.GetString(Value) : (ID + 1).ToString());
+			return (Length > 0 ? Encoding.ASCII.GetString(Value) : (Index + 1).ToString());
 		}
 
 		public string Preview()
@@ -93,6 +93,11 @@ namespace MsbtEditor
 		public byte[] Data;
 		public bool Editable = true;
 		public bool NullTerminated = true;
+	}
+
+	public class InvalidMSBTException : Exception
+	{
+		public InvalidMSBTException(string message) : base(message) { }
 	}
 
 	public class MSBT
@@ -128,11 +133,11 @@ namespace MsbtEditor
 				// Header
 				Header.Identifier = br.ReadBytes(8);
 				if (Encoding.ASCII.GetString(Header.Identifier) != "MsgStdBn")
-					throw new Exception("File is not a valid MSBT.");
+					throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
 				Header.ByteOrderMark = br.ReadBytes(2);
 
 				// Byte Order
-				br.ByteOrder = Header.ByteOrderMark[0] == 0xFF ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+				br.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
 
 				Header.Unknown1 = br.ReadUInt16();
 				Header.Unknown2 = br.ReadUInt16();
@@ -141,6 +146,9 @@ namespace MsbtEditor
 				Header.FileSizeOffset = (UInt32)br.BaseStream.Position;
 				Header.FileSize = br.ReadUInt32();
 				Header.Unknown4 = br.ReadBytes(10);
+
+				if (Header.FileSize != br.BaseStream.Length)
+					throw new InvalidMSBTException("The file provided is not a valid MSBT file.");
 
 				SectionOrder.Clear();
 				for (int i = 0; i < Header.NumberOfSections; i++)
@@ -179,6 +187,7 @@ namespace MsbtEditor
 
 		private void ReadLBL1(BinaryReaderX br)
 		{
+			// TODO: Continue reverse engineering the LBL1 section because the magic value below shouldn't be the end game
 			long offset = br.BaseStream.Position;
 			LBL1.Identifier = br.ReadBytes(4);
 			LBL1.SectionSize = br.ReadUInt32();
@@ -192,7 +201,7 @@ namespace MsbtEditor
 				Entry lbl = new Entry();
 				lbl.Length = Convert.ToUInt32(br.ReadByte());
 				lbl.Value = br.ReadBytes((int)lbl.Length);
-				lbl.ID = br.ReadInt32();
+				lbl.Index = br.ReadInt32();
 				LBL1.Labels.Add(lbl);
 			}
 
@@ -289,7 +298,7 @@ namespace MsbtEditor
 					entry.Values.Add(finalVal);
 				}
 
-				entry.ID = i;
+				entry.Index = i;
 				TXT2.OriginalEntries.Add(entry);
 
 				// Duplicate entries for editing
@@ -303,7 +312,7 @@ namespace MsbtEditor
 					entryEdited.Values.Add(val);
 				}
 				entryEdited.Value = entry.Value;
-				entryEdited.ID = entry.ID;
+				entryEdited.Index = entry.Index;
 				TXT2.Entries.Add(entryEdited);
 			}
 
@@ -394,7 +403,7 @@ namespace MsbtEditor
 				{
 					bw.Write(Convert.ToByte(lbl.Length));
 					bw.Write(lbl.Value);
-					bw.Write(lbl.ID);
+					bw.Write(lbl.Index);
 				}
 
 				PaddingWrite(bw);

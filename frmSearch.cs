@@ -41,12 +41,12 @@ namespace MsbtEditor
 
 						if (chkMatchCase.Checked)
 						{
-							if (Msbt.TXT2.Entries[entry.ID].Preview().Contains(txtFindText.Text))
+							if (Msbt.TXT2.Entries[entry.Index].Preview().Contains(txtFindText.Text))
 								lstResults.Items.Add(entry);
 						}
 						else
 						{
-							if (Msbt.TXT2.Entries[entry.ID].Preview().ToLower().Contains(txtFindText.Text.ToLower()))
+							if (Msbt.TXT2.Entries[entry.Index].Preview().ToLower().Contains(txtFindText.Text.ToLower()))
 								lstResults.Items.Add(entry);
 						}
 					}
