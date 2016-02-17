@@ -5,17 +5,25 @@ using System.Text;
 
 namespace MsbtEditor
 {
+	public enum EncodingByte : byte
+	{
+		UTF8 = 0x00,
+		Unicode = 0x01
+	}
+
 	public class Header
 	{
 		public byte[] Identifier; // MsgStdBn
 		public byte[] ByteOrderMark;
 		public UInt16 Unknown1; // Always 0x0000
-		public UInt16 Unknown2; // Always 0x0103
+		public EncodingByte EncodingByte;
+		public byte Unknown2; // Always 0x03
 		public UInt16 NumberOfSections;
 		public UInt16 Unknown3; // Always 0x0000
-		public UInt32 FileSizeOffset;
 		public UInt32 FileSize;
 		public byte[] Unknown4; // Always 0x0000 0000 0000 0000 0000
+
+		public UInt32 FileSizeOffset;
 	}
 
 	public class LBL1
@@ -73,6 +81,7 @@ namespace MsbtEditor
 		public List<Value> Values = new List<Value>();
 		public byte[] Value;
 		public Int32 Index;
+		public Encoding FileEncoding = Encoding.Unicode;
 
 		public override string ToString()
 		{
@@ -83,7 +92,7 @@ namespace MsbtEditor
 		{
 			string result = string.Empty;
 			foreach (Value value in Values)
-				result += Encoding.Unicode.GetString(value.Data).Replace("\n", "\r\n");
+				result += FileEncoding.GetString(value.Data).Replace("\n", "\r\n");
 			return result;
 		}
 	}
@@ -112,6 +121,7 @@ namespace MsbtEditor
 		public TSY1 TSY1 = new TSY1();
 		public TXT2 TXT2 = new TXT2();
 		public List<string> SectionOrder = new List<string>();
+		public Encoding FileEncoding = Encoding.Unicode;
 
 		private byte paddingChar = 0xAB;
 
@@ -140,7 +150,9 @@ namespace MsbtEditor
 				br.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
 
 				Header.Unknown1 = br.ReadUInt16();
-				Header.Unknown2 = br.ReadUInt16();
+				Header.EncodingByte = (EncodingByte)br.ReadByte();
+				FileEncoding = (Header.EncodingByte == EncodingByte.UTF8 ? Encoding.UTF8 : Encoding.Unicode);
+				Header.Unknown2 = br.ReadByte();
 				Header.NumberOfSections = br.ReadUInt16();
 				Header.Unknown3 = br.ReadUInt16();
 				Header.FileSizeOffset = (UInt32)br.BaseStream.Position;
@@ -202,6 +214,7 @@ namespace MsbtEditor
 				lbl.Length = Convert.ToUInt32(br.ReadByte());
 				lbl.Value = br.ReadBytes((int)lbl.Length);
 				lbl.Index = br.ReadInt32();
+				lbl.FileEncoding = FileEncoding;
 				LBL1.Labels.Add(lbl);
 			}
 
@@ -263,27 +276,51 @@ namespace MsbtEditor
 				List<byte> result = new List<byte>();
 				while (!eos)
 				{
-					if (br.BaseStream.Position == nextOffset || br.BaseStream.Position == Header.FileSize)
+					if (br.BaseStream.Position >= nextOffset || br.BaseStream.Position >= Header.FileSize)
+					{
 						eos = true;
+						br.BaseStream.Seek(nextOffset, SeekOrigin.Begin);
+					}
 					else
 					{
-						byte[] unichar = br.ReadBytes(2);
+						if (Header.EncodingByte == EncodingByte.UTF8)
+						{
+							byte unichar = br.ReadByte();
 
-						if (Header.ByteOrderMark[0] == 0xFE)
-							Array.Reverse(unichar);
+							if (unichar != 0x0)
+								result.Add(unichar);
+							else
+							{
+								Value val = new Value();
+								val.Data = result.ToArray();
 
-						if (unichar[0] != 0x0 || unichar[1] != 0x0)
-							result.AddRange(unichar);
+								if (result.Count == 0)
+									val.Editable = false;
+
+								entry.Values.Add(val);
+								result.Clear();
+							}
+						}
 						else
 						{
-							Value val = new Value();
-							val.Data = result.ToArray();
+							byte[] unichar = br.ReadBytes(2);
 
-							if (result.Count == 0)
-								val.Editable = false;
+							if (Header.ByteOrderMark[0] == 0xFE)
+								Array.Reverse(unichar);
 
-							entry.Values.Add(val);
-							result.Clear();
+							if (unichar[0] != 0x0 || unichar[1] != 0x0)
+								result.AddRange(unichar);
+							else
+							{
+								Value val = new Value();
+								val.Data = result.ToArray();
+
+								if (result.Count == 0)
+									val.Editable = false;
+
+								entry.Values.Add(val);
+								result.Clear();
+							}
 						}
 					}
 				}
@@ -299,6 +336,7 @@ namespace MsbtEditor
 				}
 
 				entry.Index = i;
+				entry.FileEncoding = FileEncoding;
 				TXT2.OriginalEntries.Add(entry);
 
 				// Duplicate entries for editing
@@ -313,6 +351,7 @@ namespace MsbtEditor
 				}
 				entryEdited.Value = entry.Value;
 				entryEdited.Index = entry.Index;
+				entryEdited.FileEncoding = FileEncoding;
 				TXT2.Entries.Add(entryEdited);
 			}
 
@@ -340,12 +379,13 @@ namespace MsbtEditor
 				BinaryWriterX bw = new BinaryWriterX(fs);
 
 				// Byte Order
-				bw.ByteOrder = Header.ByteOrderMark[0] == 0xFF ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
+				bw.ByteOrder = Header.ByteOrderMark[0] > Header.ByteOrderMark[1] ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
 
 				// Header
 				bw.Write(Header.Identifier);
 				bw.Write(Header.ByteOrderMark);
 				bw.Write(Header.Unknown1);
+				bw.Write((byte)Header.EncodingByte);
 				bw.Write(Header.Unknown2);
 				bw.Write(Header.NumberOfSections);
 				bw.Write(Header.Unknown3);
@@ -501,7 +541,7 @@ namespace MsbtEditor
 				{
 					foreach (Value value in TXT2.Entries[i].Values)
 					{
-						newSize += (UInt32)(value.Data.Length + (value.NullTerminated ? 2 : 0));
+						newSize += (UInt32)(value.Data.Length + (value.NullTerminated ? (Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2) : 0));
 					}
 				}
 
@@ -518,7 +558,7 @@ namespace MsbtEditor
 				{
 					offsets.Add(offsetsLength + runningTotal);
 					foreach (Value value in TXT2.Entries[i].Values)
-						runningTotal += (UInt32)(value.Data.Length + (value.NullTerminated ? 2 : 0));
+						runningTotal += (UInt32)(value.Data.Length + (value.NullTerminated ? (Header.EncodingByte == EncodingByte.UTF8 ? 1 : 2) : 0));
 				}
 				for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					bw.Write(offsets[i]);
@@ -527,20 +567,35 @@ namespace MsbtEditor
 					for (int j = 0; j < TXT2.Entries[i].Values.Count; j++)
 						TXT2.OriginalEntries[i].Values[j] = TXT2.Entries[i].Values[j];
 
-					foreach (Value value in TXT2.Entries[i].Values)
+					if (Header.EncodingByte == EncodingByte.UTF8)
 					{
-						if (Header.ByteOrderMark[0] == 0xFF)
-							bw.Write(value.Data);
-						else
-							for (int j = 0; j < value.Data.Length; j += 2)
-							{
-								bw.Write(value.Data[j + 1]);
-								bw.Write(value.Data[j]);
-							}
-						if (value.NullTerminated)
+						foreach (Value value in TXT2.Entries[i].Values)
 						{
-							bw.Write('\0');
-							bw.Write('\0');
+							bw.Write(value.Data);
+
+							if (value.NullTerminated)
+							{
+								bw.Write('\0');
+							}
+						}
+					}
+					else
+					{
+						foreach (Value value in TXT2.Entries[i].Values)
+						{
+							if (Header.ByteOrderMark[0] == 0xFF)
+								bw.Write(value.Data);
+							else
+								for (int j = 0; j < value.Data.Length; j += 2)
+								{
+									bw.Write(value.Data[j + 1]);
+									bw.Write(value.Data[j]);
+								}
+							if (value.NullTerminated)
+							{
+								bw.Write('\0');
+								bw.Write('\0');
+							}
 						}
 					}
 				}

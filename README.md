@@ -15,6 +15,8 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * Super Smash Bros. 3DS - Partially tested.
 * Super Smash Bros. WiiU - Partially tested.
 * Mario & Luigi Paper Jam - Mostly supported.
+* Art Academy - Partially tested.
+* Detective Pikachu - Partially tested.
 * Others may be supported, need feedback.
 
 ### Other Features

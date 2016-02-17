@@ -308,7 +308,7 @@ namespace MsbtEditor
 			string result = txtEdit.Text;
 
 			Entry entry = (Entry)lstStrings.SelectedItem;
-			_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data = Encoding.Unicode.GetBytes(result.Replace("\r\n", "\n"));
+			_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data = entry.FileEncoding.GetBytes(result.Replace("\r\n", "\n"));
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
@@ -322,7 +322,7 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtEdit.Text = Encoding.Unicode.GetString(_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
+			txtEdit.Text = entry.FileEncoding.GetString(_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
 
 			slbAddress.Text = "String: " + (entry.Index + 1) + "/" + (lstSubStrings.SelectedIndex + 1);
 		}
@@ -331,7 +331,7 @@ namespace MsbtEditor
 		{
 			Entry entry = (Entry)lstStrings.SelectedItem;
 
-			txtOriginal.Text = Encoding.Unicode.GetString(_msbt.TXT2.OriginalEntries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
+			txtOriginal.Text = entry.FileEncoding.GetString(_msbt.TXT2.OriginalEntries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
 		}
 
 		private void UpdateTextPreview()
