@@ -4,6 +4,7 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 ### Supported MSBT Sections
 * LBL1 - Partial support. Most content is unknown.
 * NLI1 - Preliminary support. Most content is unknown.
+* ATO1 - Preliminary support. Content is all 0xFF without padding.
 * ATR1 - Preliminary support. Content is usually blank.
 * TSY1 - Preliminary support. Content is unknown.
 * TXT2 - Full support. Also supports sub strings within each entry.
@@ -17,6 +18,7 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * Mario & Luigi Paper Jam - Mostly supported.
 * Art Academy - Partially tested.
 * Detective Pikachu - Partially tested.
+* Miitomo - Partially tested.
 * Others may be supported, need feedback.
 
 ### Other Features

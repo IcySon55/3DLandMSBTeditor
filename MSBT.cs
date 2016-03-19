@@ -45,6 +45,14 @@ namespace MsbtEditor
 		public byte[] Unknown2; // Tons of unknown data
 	}
 
+	public class ATO1
+	{
+		public byte[] Identifier; // ATO1
+		public UInt32 SectionSize; // Begins after Unknown1
+		public byte[] Unknown1; // Always 0x0000 0000
+		public byte[] Unknown2; // Large collection of 0xFF
+	}
+
 	public class ATR1
 	{
 		public byte[] Identifier; // ATR1
@@ -117,6 +125,7 @@ namespace MsbtEditor
 		public Header Header = new Header();
 		public LBL1 LBL1 = new LBL1();
 		public NLI1 NLI1 = new NLI1();
+		public ATO1 ATO1 = new ATO1();
 		public ATR1 ATR1 = new ATR1();
 		public TSY1 TSY1 = new TSY1();
 		public TXT2 TXT2 = new TXT2();
@@ -176,6 +185,11 @@ namespace MsbtEditor
 						ReadNLI1(br);
 						SectionOrder.Add("NLI1");
 					}
+					else if (br.PeekString() == "ATO1")
+					{
+						ReadATO1(br);
+						SectionOrder.Add("ATO1");
+					}
 					else if (br.PeekString() == "ATR1")
 					{
 						ReadATR1(br);
@@ -231,6 +245,14 @@ namespace MsbtEditor
 			NLI1.Unknown2 = br.ReadBytes((int)NLI1.SectionSize); // Read in the entire section at once since we don't know what it's for
 
 			PaddingSeek(br);
+		}
+
+		private void ReadATO1(BinaryReaderX br)
+		{
+			ATO1.Identifier = br.ReadBytes(4);
+			ATO1.SectionSize = br.ReadUInt32();
+			ATO1.Unknown1 = br.ReadBytes(8);
+			ATO1.Unknown2 = br.ReadBytes((int)ATO1.SectionSize); // Read in the rest of the section at once since we don't know what it's for
 		}
 
 		private void ReadATR1(BinaryReaderX br)
@@ -398,6 +420,8 @@ namespace MsbtEditor
 						WriteLBL1(bw);
 					else if (section == "NLI1")
 						WriteNLI1(bw);
+					else if (section == "ATO1")
+						WriteATO1(bw);
 					else if (section == "ATR1")
 						WriteATR1(bw);
 					else if (section == "TSY1")
@@ -470,6 +494,27 @@ namespace MsbtEditor
 				bw.Write(NLI1.Unknown2);
 
 				PaddingWrite(bw);
+
+				result = true;
+			}
+			catch (Exception)
+			{
+				result = false;
+			}
+
+			return result;
+		}
+
+		private bool WriteATO1(BinaryWriterX bw)
+		{
+			bool result = false;
+
+			try
+			{
+				bw.Write(ATO1.Identifier);
+				bw.Write(ATO1.SectionSize);
+				bw.Write(ATO1.Unknown1);
+				bw.Write(ATO1.Unknown2);
 
 				result = true;
 			}
