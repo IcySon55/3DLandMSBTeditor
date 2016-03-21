@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MsbtEditor
+namespace MsbtEditor.BG4
 {
 	public class FileEntry : IComparable<FileEntry>
 	{

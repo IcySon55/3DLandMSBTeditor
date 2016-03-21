@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="BG4.cs" />
     <Compile Include="BinaryTools.cs" />
+    <Compile Include="UMSBT.cs" />
     <Compile Include="frmBG4.cs">
       <SubType>Form</SubType>
     </Compile>

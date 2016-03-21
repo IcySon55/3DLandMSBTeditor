@@ -491,7 +491,7 @@ namespace MsbtEditor
 							if (new DirectoryInfo(fbd.SelectedPath).GetFiles().Length > 0)
 								overwrite = MessageBox.Show("Is it OK to overwrite files in the destination directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes ? true : false;
 
-							string result = BG4.Extract(ofd.FileName, fbd.SelectedPath, overwrite);
+							string result = MsbtEditor.BG4.BG4.Extract(ofd.FileName, fbd.SelectedPath, overwrite);
 
 							MessageBox.Show(result, "BG4 Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 						}
@@ -505,12 +505,15 @@ namespace MsbtEditor
 
 		private void compressToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			OpenFileDialog ofd = new OpenFileDialog();
+
 			try
 			{
-				OpenFileDialog load = new OpenFileDialog();
-				if (load.ShowDialog() != DialogResult.OK) return;
-				YATA.dsdecmp.Compress(load.FileName, load.FileName + ".lz");
-				MessageBox.Show("Done", "LZ11 Compress");
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					YATA.dsdecmp.Compress(ofd.FileName, ofd.FileName + ".lz");
+					MessageBox.Show("Done", "LZ11 Compress");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -520,12 +523,15 @@ namespace MsbtEditor
 
 		private void decompressToolStripMenuItem_Click(object sender, EventArgs e)
 		{
+			OpenFileDialog ofd = new OpenFileDialog();
+
 			try
 			{
-				OpenFileDialog load = new OpenFileDialog();
-				if (load.ShowDialog() != DialogResult.OK) return;
-				YATA.dsdecmp.Decompress(load.FileName, load.FileName + ".bin");
-				MessageBox.Show("Done", "LZ11 Decompress");
+				if (ofd.ShowDialog() == DialogResult.OK)
+				{
+					YATA.dsdecmp.Decompress(ofd.FileName, ofd.FileName + ".bin");
+					MessageBox.Show("Done", "LZ11 Decompress");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -544,6 +550,79 @@ namespace MsbtEditor
 			{
 				lstStrings.SelectedItem = search.Return;
 			}
+		}
+
+		private void extractToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Select a UMSBT File...";
+			ofd.Filter = "UMSBT Archive (*.umsbt)|*.umsbt";
+			ofd.InitialDirectory = Settings.Default.BG4OpenDirectory;
+
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				Settings.Default.BG4OpenDirectory = new FileInfo(ofd.FileName).DirectoryName;
+
+				if (File.Exists(ofd.FileName))
+				{
+					FolderBrowserDialog fbd = new FolderBrowserDialog();
+					fbd.Description = "Select the destination directory to extract the files into:";
+					fbd.SelectedPath = Settings.Default.BG4ExtractDirectory;
+
+					if (fbd.ShowDialog() == DialogResult.OK)
+					{
+						Settings.Default.BG4ExtractDirectory = fbd.SelectedPath;
+
+						if (Directory.Exists(fbd.SelectedPath))
+						{
+							bool overwrite = true;
+
+							if (new DirectoryInfo(fbd.SelectedPath).GetFiles("*.msbt").Length > 0)
+								overwrite = MessageBox.Show("Is it OK to overwrite MSBT files in the destination directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes ? true : false;
+
+							string result = MsbtEditor.UMSBT.UMSBT.Extract(ofd.FileName, fbd.SelectedPath, overwrite);
+
+							MessageBox.Show(result, "UMSBT Extraction Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+						}
+					}
+				}
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
+		}
+
+		private void packToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.Description = "Select the source directory containing MSBT files:";
+			fbd.SelectedPath = Settings.Default.BG4ExtractDirectory;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				Settings.Default.BG4ExtractDirectory = fbd.SelectedPath;
+
+				if (Directory.Exists(fbd.SelectedPath))
+				{
+					SaveFileDialog sfd = new SaveFileDialog();
+					sfd.Title = "Save UMSBT Archive As...";
+					sfd.Filter = "UMSBT Archive (*.umsbt)|*.umsbt";
+					sfd.InitialDirectory = Settings.Default.BG4OpenDirectory;
+					sfd.AddExtension = true;
+
+					if (sfd.ShowDialog() == DialogResult.OK)
+					{
+						Settings.Default.BG4OpenDirectory = new FileInfo(sfd.FileName).DirectoryName;
+
+						string result = MsbtEditor.UMSBT.UMSBT.Pack(sfd.FileName, fbd.SelectedPath);
+
+						MessageBox.Show(result, "UMSBT Pack Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+					}
+				}
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
 		}
 	}
 }

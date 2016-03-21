@@ -19,6 +19,7 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * Art Academy - Partially tested.
 * Detective Pikachu - Partially tested.
 * Miitomo - Partially tested.
+* Animal Crossing: New Leaf - Supported.
 * Others may be supported, need feedback.
 
 ### Other Features
@@ -26,6 +27,7 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * Export CSV - Exports the currently open file and any changes made to a CSV file.
 * BG4 Extraction - Extract files from within BG4 archives found in games like Mario & Luigi Paper Jam.
 * LZ11 De/Compression - Compress and Decompress files using LZ11. Held onto this feature from Exelix11's original version.
+* UMSBT Extraction & Packing - Extract MSBT files from UMSBT archives and repack them into UMSBT archives.
 
 ### Known Issues
 * None
