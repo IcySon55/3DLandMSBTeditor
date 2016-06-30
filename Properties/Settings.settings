@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ApplicationName" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">MSBT Editor Reloaded v0.8.6</Value>
+      <Value Profile="(Default)">MSBT Editor Reloaded v0.9.0</Value>
     </Setting>
     <Setting Name="BG4OpenDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

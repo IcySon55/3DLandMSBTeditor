@@ -30,10 +30,10 @@ namespace MsbtEditor
 	{
 		public byte[] Identifier; // LBL1
 		public UInt32 SectionSize; // Begins after Unknown1
-		public byte[] Unknown1; // Always 0x0000 0000
-		public byte[] Unknown2;
-		public byte[] Unknown3; // Large collection of unknown values
+		public byte[] Padding1; // Always 0x0000 0000
+		public UInt32 NumberOfGroups;
 
+		public List<Group> Groups;
 		public List<Entry> Labels;
 	}
 
@@ -83,13 +83,21 @@ namespace MsbtEditor
 		public List<Entry> Entries;
 	}
 
-	public class Entry
+	public class Group
+	{
+		public UInt32 NumberOfLabels;
+		public UInt32 Offset;
+	}
+
+	public class Entry : IComparable<Entry>
 	{
 		public UInt32 Length;
 		public List<Value> Values = new List<Value>();
 		public byte[] Value;
 		public Int32 Index;
+		public UInt32 Checksum;
 		public Encoding FileEncoding = Encoding.Unicode;
+		public Entry TXT2Ref = null;
 
 		public override string ToString()
 		{
@@ -102,6 +110,12 @@ namespace MsbtEditor
 			foreach (Value value in Values)
 				result += FileEncoding.GetString(value.Data).Replace("\n", "\r\n");
 			return result;
+		}
+
+		public int CompareTo(Entry rhs)
+		{
+			int result = Checksum.CompareTo(rhs.Checksum);
+			return result != 0 ? result : Index.CompareTo(rhs.Index);
 		}
 	}
 
@@ -134,6 +148,9 @@ namespace MsbtEditor
 
 		private byte paddingChar = 0xAB;
 
+		public static UInt32 LabelMaxLength = 64;
+		public static string LabelFilter = @"^[a-zA-Z0-9_]+$";
+
 		public MSBT(string filename)
 		{
 			File = new FileInfo(filename);
@@ -144,6 +161,7 @@ namespace MsbtEditor
 				BinaryReaderX br = new BinaryReaderX(fs);
 
 				// Initialize Members
+				LBL1.Groups = new List<Group>();
 				LBL1.Labels = new List<Entry>();
 				ATR1.Attributes = new List<UInt32>();
 				TXT2.OriginalEntries = new List<Entry>();
@@ -211,18 +229,75 @@ namespace MsbtEditor
 			}
 		}
 
+		// Manipulation
+		public Entry AddEntry(string label)
+		{
+			Entry newLabel = new Entry();
+			newLabel.Length = (uint)label.Length;
+			newLabel.Value = Encoding.ASCII.GetBytes(label);
+			LBL1.Labels.Add(newLabel);
+
+			Entry newEntry = new Entry();
+			newEntry.Index = TXT2.Entries.Count;
+			newEntry.FileEncoding = FileEncoding;
+			Value newValue = new Value();
+			newValue.Data = new byte[] {};
+			newValue.Editable = true;
+			newValue.NullTerminated = true;
+			newEntry.Values.Add(newValue);
+			TXT2.Entries.Add(newEntry);
+
+			Entry dupe = new Entry();
+			dupe.Index = newEntry.Index;
+			dupe.FileEncoding = FileEncoding;
+			Value vDupe = new Value();
+			vDupe.Data = newValue.Data;
+			vDupe.Editable = true;
+			vDupe.NullTerminated = true;
+			dupe.Values.Add(vDupe);
+			TXT2.OriginalEntries.Add(dupe);
+
+			newLabel.Index = TXT2.Entries.IndexOf(newEntry);
+			newLabel.TXT2Ref = newEntry;
+			TXT2.NumberOfStrings += 1;
+			ATR1.NumberOfAttributes += 1;
+
+			return newLabel;
+		}
+
+		public void RemoveEntry(Entry label)
+		{
+			LBL1.Labels.Remove(label);
+			TXT2.Entries.RemoveAt(label.Index);
+			TXT2.OriginalEntries.RemoveAt(label.Index);
+
+			for (int i = label.Index + 1; i < TXT2.NumberOfStrings; i++)
+			{
+				label.Index -= 1;
+			}
+
+			TXT2.NumberOfStrings -= 1;
+			ATR1.NumberOfAttributes -= 1;
+		}
+
+		// Reading
 		private void ReadLBL1(BinaryReaderX br)
 		{
-			// TODO: Continue reverse engineering the LBL1 section because the magic value below shouldn't be the end game
 			long offset = br.BaseStream.Position;
 			LBL1.Identifier = br.ReadBytes(4);
 			LBL1.SectionSize = br.ReadUInt32();
-			LBL1.Unknown1 = br.ReadBytes(8);
-			LBL1.Unknown2 = br.ReadBytes(8);
-			uint startOfLabels = 0x35C; // Magic LBL1 label start position
-			LBL1.Unknown3 = br.ReadBytes((int)(startOfLabels - br.BaseStream.Position));
+			LBL1.Padding1 = br.ReadBytes(8);
+			LBL1.NumberOfGroups = br.ReadUInt32();
 
-			while (br.BaseStream.Position < (offset + LBL1.Identifier.Length + sizeof(UInt32) + LBL1.Unknown1.Length + LBL1.SectionSize))
+			for (int i = 0; i < LBL1.NumberOfGroups; i++)
+			{
+				Group grp = new Group();
+				grp.NumberOfLabels = br.ReadUInt32();
+				grp.Offset = br.ReadUInt32();
+				LBL1.Groups.Add(grp);
+			}
+
+			while (br.BaseStream.Position < (offset + LBL1.Identifier.Length + sizeof(UInt32) + LBL1.Padding1.Length + LBL1.SectionSize))
 			{
 				Entry lbl = new Entry();
 				lbl.Length = Convert.ToUInt32(br.ReadByte());
@@ -377,6 +452,12 @@ namespace MsbtEditor
 				TXT2.Entries.Add(entryEdited);
 			}
 
+			// Tie in LBL1 labels
+			foreach (Entry lbl in LBL1.Labels)
+			{
+				lbl.TXT2Ref = TXT2.Entries[lbl.Index];
+			}
+
 			PaddingSeek(br);
 		}
 
@@ -450,18 +531,52 @@ namespace MsbtEditor
 			try
 			{
 				// Calculate Section Size
-				UInt32 newSize = (UInt32)(LBL1.Unknown2.Length + LBL1.Unknown3.Length);
+				UInt32 newSize = sizeof(UInt32);
 
+				foreach (Group grp in LBL1.Groups)
+				{
+					newSize += (UInt32)(sizeof(UInt32) + sizeof(UInt32));
+					grp.NumberOfLabels = 0;
+				}
 				foreach (Entry lbl in LBL1.Labels)
 				{
 					newSize += (UInt32)(sizeof(byte) + lbl.Value.Length + sizeof(UInt32));
+
+					// Calculate Label Checksums and Group Label Counts
+					lbl.Checksum = LabelChecksum(Encoding.ASCII.GetString(lbl.Value));
+					LBL1.Groups[(int)lbl.Checksum].NumberOfLabels++;
 				}
 
+				LBL1.Labels.Sort();
+
+				// Calculate Group Offsets
+				UInt32 offsetsLength = LBL1.NumberOfGroups * sizeof(UInt32) * 2 + sizeof(UInt32);
+				UInt32 runningTotal = 0;
+				for (int i = 0; i < LBL1.Groups.Count; i++)
+				{
+					LBL1.Groups[i].Offset = offsetsLength + runningTotal;
+					foreach (Entry lbl in LBL1.Labels)
+						if (lbl.Checksum == i)
+							runningTotal += (UInt32)(sizeof(byte) + Encoding.ASCII.GetString(lbl.Value).Length + sizeof(UInt32));
+				}
+
+				// Write
 				bw.Write(LBL1.Identifier);
 				bw.Write(newSize);
-				bw.Write(LBL1.Unknown1);
-				bw.Write(LBL1.Unknown2);
-				bw.Write(LBL1.Unknown3);
+				bw.Write(LBL1.Padding1);
+				bw.Write(LBL1.NumberOfGroups);
+
+				foreach (Group grp in LBL1.Groups)
+				{
+					bw.Write(grp.NumberOfLabels);
+					bw.Write(grp.Offset);
+				}
+
+				// Update indexes to TXT2 entries
+				foreach (Entry lbl in LBL1.Labels)
+				{
+					lbl.Index = TXT2.Entries.IndexOf(lbl.TXT2Ref);
+				}
 
 				foreach (Entry lbl in LBL1.Labels)
 				{
@@ -663,6 +778,20 @@ namespace MsbtEditor
 			if (remainder > 0)
 				for (int i = 0; i < 16 - remainder; i++)
 					bw.Write(paddingChar);
+		}
+
+		public uint LabelChecksum(string label)
+		{
+			uint group = 0;
+
+			for (int i = 0; i < label.Length; i++)
+			{
+				group *= 0x492;
+				group += label[i];
+				group &= 0xFFFFFFFF;
+			}
+
+			return group % LBL1.NumberOfGroups;
 		}
 	}
 }

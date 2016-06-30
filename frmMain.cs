@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using MsbtEditor.Properties;
 using Be.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace MsbtEditor
 {
@@ -232,6 +233,8 @@ namespace MsbtEditor
 				if (lstSubStrings.Items.Count > 0)
 					lstSubStrings.SelectedIndex = 0;
 			}
+
+			txtLabelName.Text = entry.ToString();
 		}
 
 		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
@@ -386,6 +389,10 @@ namespace MsbtEditor
 			exportToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
+			txtLabelName.Enabled = _fileOpen;
+			btnSaveLabel.Enabled = _fileOpen;
+			btnAddLabel.Enabled = _fileOpen;
+			btnDeleteLabel.Enabled = _fileOpen;
 			lstSubStrings.Enabled = _fileOpen;
 			txtEdit.Enabled = _fileOpen;
 			txtOriginal.Enabled = _fileOpen;
@@ -623,6 +630,82 @@ namespace MsbtEditor
 
 			Settings.Default.Save();
 			Settings.Default.Reload();
+		}
+
+		private void btnSaveLabel_Click(object sender, EventArgs e)
+		{
+			if (txtLabelName.Text.Trim().Length <= MSBT.LabelMaxLength && Regex.IsMatch(txtLabelName.Text.Trim(), MSBT.LabelFilter))
+			{
+				bool taken = false;
+
+				foreach (Entry lbl in _msbt.LBL1.Labels)
+				{
+					if (Encoding.ASCII.GetString(lbl.Value) == txtLabelName.Text.Trim())
+					{
+						taken = true;
+						break;
+					}
+				}
+
+				if (!taken)
+				{
+					Entry entry = (Entry)lstStrings.SelectedItem;
+					entry.Value = Encoding.ASCII.GetBytes(txtLabelName.Text.Trim());
+					int selectedIndex = lstStrings.SelectedIndex;
+					LoadFile();
+					if (lstStrings.Items.Count > selectedIndex)
+						lstStrings.SelectedIndex = selectedIndex;
+				}
+				else
+					MessageBox.Show("The label name you entered already exists. The new label name must be unique.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+				MessageBox.Show("The label name you entered is not valid. You can only use alphanumeric values: a-z, A-Z, 0-9 and _ (underscore). The length is also limited to 64 characters.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+
+		private void btnAddLabel_Click(object sender, EventArgs e)
+		{
+			if (txtLabelName.Text.Trim().Length <= MSBT.LabelMaxLength && Regex.IsMatch(txtLabelName.Text.Trim(), MSBT.LabelFilter))
+			{
+				bool taken = false;
+
+				foreach (Entry lbl in _msbt.LBL1.Labels)
+				{
+					if (Encoding.ASCII.GetString(lbl.Value) == txtLabelName.Text.Trim())
+					{
+						taken = true;
+						break;
+					}
+				}
+
+				if (!taken)
+				{
+					Entry lbl = _msbt.AddEntry(txtLabelName.Text.Trim());
+					LoadFile();
+					if (lstStrings.Items.Contains(lbl))
+						lstStrings.SelectedIndex = lstStrings.Items.IndexOf(lbl);
+				}
+				else
+					MessageBox.Show("The label name you entered already exists. The new label name must be unique.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+			else
+				MessageBox.Show("The label name you entered is not valid. You can only use alphanumeric values: a-z, A-Z, 0-9 and _ (underscore). The length is also limited to 64 characters.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+		}
+
+		private void btnDeleteLabel_Click(object sender, EventArgs e)
+		{
+			Entry entry = (Entry)lstStrings.SelectedItem;
+			string label = Encoding.ASCII.GetString(entry.Value);
+
+			DialogResult dr = MessageBox.Show("Are you sure you want to delete '" + label + "'?", "Delete Label?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			if (dr == DialogResult.Yes)
+			{
+				_msbt.RemoveEntry(entry);
+				int selectedIndex = lstStrings.SelectedIndex;
+				LoadFile();
+				if (lstStrings.Items.Count > selectedIndex)
+					lstStrings.SelectedIndex = selectedIndex;
+			}
 		}
 	}
 }
