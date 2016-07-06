@@ -70,6 +70,7 @@
 			this.btnDeleteLabel = new System.Windows.Forms.Button();
 			this.txtLabelName = new System.Windows.Forms.TextBox();
 			this.btnSaveLabel = new System.Windows.Forms.Button();
+			this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.stsMain.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -104,7 +105,7 @@
 			this.openToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -113,7 +114,7 @@
 			this.saveToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -122,28 +123,29 @@
 			this.saveAsToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave as...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
 			// editToolStripMenuItem
 			// 
 			this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.findToolStripMenuItem});
+            this.findToolStripMenuItem,
+            this.searchDirectoryToolStripMenuItem});
 			this.editToolStripMenuItem.Name = "editToolStripMenuItem";
 			this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
 			this.editToolStripMenuItem.Text = "&Edit";
@@ -153,7 +155,7 @@
 			this.findToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_find;
 			this.findToolStripMenuItem.Name = "findToolStripMenuItem";
 			this.findToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.findToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.findToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			this.findToolStripMenuItem.Text = "&Find";
 			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
 			// 
@@ -200,7 +202,7 @@
 			// 
 			this.decompressToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
 			this.decompressToolStripMenuItem.Name = "decompressToolStripMenuItem";
-			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
 			this.decompressToolStripMenuItem.Text = "&Decompress";
 			this.decompressToolStripMenuItem.Click += new System.EventHandler(this.decompressToolStripMenuItem_Click);
 			// 
@@ -208,7 +210,7 @@
 			// 
 			this.compressToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_extract;
 			this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
-			this.compressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.compressToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
 			this.compressToolStripMenuItem.Text = "&Compress";
 			this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
 			// 
@@ -252,7 +254,7 @@
 			this.aboutToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
@@ -500,6 +502,16 @@
 			this.btnSaveLabel.UseVisualStyleBackColor = true;
 			this.btnSaveLabel.Click += new System.EventHandler(this.btnSaveLabel_Click);
 			// 
+			// searchDirectoryToolStripMenuItem
+			// 
+			this.searchDirectoryToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_search;
+			this.searchDirectoryToolStripMenuItem.Name = "searchDirectoryToolStripMenuItem";
+			this.searchDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.F)));
+			this.searchDirectoryToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.searchDirectoryToolStripMenuItem.Text = "Search Directory";
+			this.searchDirectoryToolStripMenuItem.Click += new System.EventHandler(this.searchDirectoryToolStripMenuItem_Click);
+			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -583,6 +595,7 @@
 		  private System.Windows.Forms.Button btnDeleteLabel;
 		  private System.Windows.Forms.TextBox txtLabelName;
 		  private System.Windows.Forms.Button btnSaveLabel;
+		  private System.Windows.Forms.ToolStripMenuItem searchDirectoryToolStripMenuItem;
     }
 }
 

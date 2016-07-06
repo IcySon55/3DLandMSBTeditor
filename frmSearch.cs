@@ -24,7 +24,7 @@ namespace MsbtEditor
 		private void frmSearch_Load(object sender, EventArgs e)
 		{
 			Return = null;
-			chkMatchCase.Checked = Settings.Default.MatchCase;
+			chkMatchCase.Checked = Settings.Default.FindMatchCase;
 		}
 
 		private void btnFindText_Click(object sender, EventArgs e)
@@ -76,12 +76,12 @@ namespace MsbtEditor
 
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
-			this.Hide();
+			this.Close();
 		}
 
 		private void chkMatchCase_CheckedChanged(object sender, EventArgs e)
 		{
-			Settings.Default.MatchCase = chkMatchCase.Checked;
+			Settings.Default.FindMatchCase = chkMatchCase.Checked;
 			Settings.Default.Save();
 			Settings.Default.Reload();
 		}
@@ -91,7 +91,7 @@ namespace MsbtEditor
 			if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
 			{
 				Return = (Entry)lstResults.SelectedItem;
-				this.Hide();
+				this.Close();
 			}
 		}
 	}

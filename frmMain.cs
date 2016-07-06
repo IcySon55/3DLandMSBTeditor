@@ -26,7 +26,6 @@ namespace MsbtEditor
 
 		private void frmMain_Load(object sender, EventArgs e)
 		{
-			Settings.Default.Upgrade();
 			slbAddress.Text = string.Empty;
 			slbActions.Text = string.Empty;
 			slbStringCount.Text = string.Empty;
@@ -556,6 +555,21 @@ namespace MsbtEditor
 			if (search.Return != null)
 			{
 				lstStrings.SelectedItem = search.Return;
+			}
+		}
+
+		private void searchDirectoryToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			frmSearchDirectory search = new frmSearchDirectory();
+			search.StartPosition = FormStartPosition.CenterParent;
+			search.ShowDialog();
+
+			if (search.Return != null)
+			{
+				OpenFile(search.Return.Filename);
+
+				if (lstStrings.Items.Count >= search.Return.Index)
+					lstStrings.SelectedIndex = search.Return.Index;
 			}
 		}
 

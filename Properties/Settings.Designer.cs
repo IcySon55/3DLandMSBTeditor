@@ -37,7 +37,7 @@ namespace MsbtEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MSBT Editor Reloaded v0.9.0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MSBT Editor Reloaded v0.9.1")]
         public string ApplicationName {
             get {
                 return ((string)(this["ApplicationName"]));
@@ -71,12 +71,48 @@ namespace MsbtEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MatchCase {
+        public bool FindMatchCase {
             get {
-                return ((bool)(this["MatchCase"]));
+                return ((bool)(this["FindMatchCase"]));
             }
             set {
-                this["MatchCase"] = value;
+                this["FindMatchCase"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SearchDirectory {
+            get {
+                return ((string)(this["SearchDirectory"]));
+            }
+            set {
+                this["SearchDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SearchMatchCase {
+            get {
+                return ((bool)(this["SearchMatchCase"]));
+            }
+            set {
+                this["SearchMatchCase"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SearchSubfolders {
+            get {
+                return ((bool)(this["SearchSubfolders"]));
+            }
+            set {
+                this["SearchSubfolders"] = value;
             }
         }
     }

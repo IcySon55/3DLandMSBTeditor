@@ -58,6 +58,12 @@
   <ItemGroup>
     <Compile Include="BG4.cs" />
     <Compile Include="BinaryTools.cs" />
+    <Compile Include="frmSearchDirectory.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmSearchDirectory.Designer.cs">
+      <DependentUpon>frmSearchDirectory.cs</DependentUpon>
+    </Compile>
     <Compile Include="UMSBT.cs" />
     <Compile Include="frmBG4.cs">
       <SubType>Form</SubType>
@@ -81,6 +87,9 @@
     <Compile Include="MSBT.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmSearchDirectory.resx">
+      <DependentUpon>frmSearchDirectory.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmBG4.resx">
       <DependentUpon>frmBG4.cs</DependentUpon>
     </EmbeddedResource>
@@ -135,6 +144,8 @@
     <Content Include="images\menu-save.png" />
     <Content Include="images\menu-up.png" />
     <Content Include="images\msbteditor.ico" />
+    <None Include="images\menu-search.png" />
+    <None Include="images\search.ico" />
     <Content Include="images\tab-class.png" />
     <Content Include="images\tab-database.png" />
     <Content Include="images\tab-form.png" />
