@@ -2,24 +2,25 @@
 This is a heavily modified version of Exelix11's MSBT file editor.
 
 ### Supported MSBT Sections
-* LBL1 - Partial support. Most content is unknown.
+* LBL1 - Full Support
 * NLI1 - Preliminary support. Most content is unknown.
 * ATO1 - Preliminary support. Content is all 0xFF without padding.
 * ATR1 - Preliminary support. Content is usually blank.
 * TSY1 - Preliminary support. Content is unknown.
-* TXT2 - Full support. Also supports sub strings within each entry.
+* TXT2 - Full support.
 
 ### Supported Games
 * Super Mario 3D Land - Not tested.
-* Mario Kart 7 - Partially tested.
+* Mario Kart 7 - Supported.
 * Super Mario Galaxy 2 - Partially tested.
-* Super Smash Bros. 3DS - Partially tested.
-* Super Smash Bros. WiiU - Partially tested.
-* Mario & Luigi Paper Jam - Mostly supported.
+* Super Smash Bros. 3DS - Supported.
+* Super Smash Bros. WiiU - Supported.
+* Mario & Luigi Paper Jam - Supported.
 * Art Academy - Partially tested.
-* Detective Pikachu - Partially tested.
+* Detective Pikachu - Supported.
 * Miitomo - Partially tested.
 * Animal Crossing: New Leaf - Supported.
+* Tokyo Mirage Sessions #FE - Supported.
 * Others may be supported, need feedback.
 
 ### Other Features
@@ -31,4 +32,4 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * UMSBT Extraction & Packing - Extract MSBT files from UMSBT archives and repack them into UMSBT archives.
 
 ### Known Issues
-* None
+* v0.8.6 - LZ11 Compression windows do not appear. Update to v0.9.0+.

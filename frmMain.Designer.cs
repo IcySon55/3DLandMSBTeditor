@@ -37,8 +37,9 @@
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.CSVExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.BG4ExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.manageLZ11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.decompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,17 +61,13 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.txtOriginal = new System.Windows.Forms.TextBox();
 			this.txtEdit = new System.Windows.Forms.TextBox();
-			this.lstSubStrings = new System.Windows.Forms.ListBox();
 			this.lblOriginal = new System.Windows.Forms.Label();
 			this.ofdOpenFile = new System.Windows.Forms.OpenFileDialog();
 			this.sfdSaveEntity = new System.Windows.Forms.SaveFileDialog();
-			this.lblSubStrings = new System.Windows.Forms.Label();
-			this.txtConcatenated = new System.Windows.Forms.TextBox();
 			this.btnAddLabel = new System.Windows.Forms.Button();
 			this.btnDeleteLabel = new System.Windows.Forms.Button();
 			this.txtLabelName = new System.Windows.Forms.TextBox();
 			this.btnSaveLabel = new System.Windows.Forms.Button();
-			this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.mnuMain.SuspendLayout();
 			this.stsMain.SuspendLayout();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -105,7 +102,7 @@
 			this.openToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -114,7 +111,7 @@
 			this.saveToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -123,21 +120,21 @@
 			this.saveAsToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave as...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -159,10 +156,20 @@
 			this.findToolStripMenuItem.Text = "&Find";
 			this.findToolStripMenuItem.Click += new System.EventHandler(this.findToolStripMenuItem_Click);
 			// 
+			// searchDirectoryToolStripMenuItem
+			// 
+			this.searchDirectoryToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_search;
+			this.searchDirectoryToolStripMenuItem.Name = "searchDirectoryToolStripMenuItem";
+			this.searchDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.F)));
+			this.searchDirectoryToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.searchDirectoryToolStripMenuItem.Text = "Search Directory";
+			this.searchDirectoryToolStripMenuItem.Click += new System.EventHandler(this.searchDirectoryToolStripMenuItem_Click);
+			// 
 			// toolsToolStripMenuItem
 			// 
 			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exportToolStripMenuItem,
+            this.CSVExportToolStripMenuItem,
             this.BG4ExplorerToolStripMenuItem,
             this.manageLZ11ToolStripMenuItem,
             this.extractUMSBTToolStripMenuItem});
@@ -172,12 +179,12 @@
 			// 
 			// exportToolStripMenuItem
 			// 
-			this.exportToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
-			this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-			this.exportToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
-			this.exportToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.exportToolStripMenuItem.Text = "&Export to CSV";
-			this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
+			this.CSVExportToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
+			this.CSVExportToolStripMenuItem.Name = "CSVExportToolStripMenuItem";
+			this.CSVExportToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+			this.CSVExportToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+			this.CSVExportToolStripMenuItem.Text = "&Export to CSV";
+			this.CSVExportToolStripMenuItem.Click += new System.EventHandler(this.CSVExportToolStripMenuItem_Click);
 			// 
 			// BG4ExplorerToolStripMenuItem
 			// 
@@ -254,7 +261,7 @@
 			this.aboutToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
@@ -286,7 +293,7 @@
 			// lblEdit
 			// 
 			this.lblEdit.AutoSize = true;
-			this.lblEdit.Location = new System.Drawing.Point(341, 32);
+			this.lblEdit.Location = new System.Drawing.Point(288, 32);
 			this.lblEdit.Margin = new System.Windows.Forms.Padding(4);
 			this.lblEdit.Name = "lblEdit";
 			this.lblEdit.Size = new System.Drawing.Size(28, 13);
@@ -297,7 +304,7 @@
 			// 
 			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(289, 316);
+			this.label3.Location = new System.Drawing.Point(288, 265);
 			this.label3.Margin = new System.Windows.Forms.Padding(4);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(55, 13);
@@ -309,11 +316,11 @@
 			this.hbxHexView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.hbxHexView.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.hbxHexView.Location = new System.Drawing.Point(292, 337);
+			this.hbxHexView.Location = new System.Drawing.Point(291, 286);
 			this.hbxHexView.Margin = new System.Windows.Forms.Padding(4);
 			this.hbxHexView.Name = "hbxHexView";
 			this.hbxHexView.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-			this.hbxHexView.Size = new System.Drawing.Size(550, 166);
+			this.hbxHexView.Size = new System.Drawing.Size(551, 217);
 			this.hbxHexView.StringViewVisible = true;
 			this.hbxHexView.TabIndex = 6;
 			this.hbxHexView.UseFixedBytesPerLine = true;
@@ -359,18 +366,17 @@
 			this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.tableLayoutPanel1.ColumnCount = 3;
-			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-			this.tableLayoutPanel1.Controls.Add(this.txtOriginal, 2, 0);
-			this.tableLayoutPanel1.Controls.Add(this.txtEdit, 1, 0);
-			this.tableLayoutPanel1.Controls.Add(this.lstSubStrings, 0, 0);
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+			this.tableLayoutPanel1.Controls.Add(this.txtOriginal, 1, 0);
+			this.tableLayoutPanel1.Controls.Add(this.txtEdit, 0, 0);
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(291, 49);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			this.tableLayoutPanel1.RowCount = 1;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(551, 157);
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(551, 209);
 			this.tableLayoutPanel1.TabIndex = 12;
 			// 
 			// txtOriginal
@@ -378,12 +384,12 @@
 			this.txtOriginal.BackColor = System.Drawing.SystemColors.Window;
 			this.txtOriginal.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtOriginal.Enabled = false;
-			this.txtOriginal.Location = new System.Drawing.Point(303, 0);
+			this.txtOriginal.Location = new System.Drawing.Point(279, 0);
 			this.txtOriginal.Margin = new System.Windows.Forms.Padding(4, 0, 0, 0);
 			this.txtOriginal.Multiline = true;
 			this.txtOriginal.Name = "txtOriginal";
 			this.txtOriginal.ReadOnly = true;
-			this.txtOriginal.Size = new System.Drawing.Size(248, 157);
+			this.txtOriginal.Size = new System.Drawing.Size(272, 209);
 			this.txtOriginal.TabIndex = 4;
 			this.txtOriginal.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			// 
@@ -391,32 +397,20 @@
 			// 
 			this.txtEdit.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.txtEdit.Enabled = false;
-			this.txtEdit.Location = new System.Drawing.Point(52, 0);
-			this.txtEdit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+			this.txtEdit.Location = new System.Drawing.Point(0, 0);
+			this.txtEdit.Margin = new System.Windows.Forms.Padding(0, 0, 4, 0);
 			this.txtEdit.Multiline = true;
 			this.txtEdit.Name = "txtEdit";
-			this.txtEdit.Size = new System.Drawing.Size(243, 157);
+			this.txtEdit.Size = new System.Drawing.Size(271, 209);
 			this.txtEdit.TabIndex = 3;
 			this.txtEdit.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			this.txtEdit.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtEdit_KeyUp);
-			// 
-			// lstSubStrings
-			// 
-			this.lstSubStrings.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.lstSubStrings.FormattingEnabled = true;
-			this.lstSubStrings.IntegralHeight = false;
-			this.lstSubStrings.Location = new System.Drawing.Point(0, 0);
-			this.lstSubStrings.Margin = new System.Windows.Forms.Padding(0, 0, 4, 0);
-			this.lstSubStrings.Name = "lstSubStrings";
-			this.lstSubStrings.Size = new System.Drawing.Size(44, 157);
-			this.lstSubStrings.TabIndex = 2;
-			this.lstSubStrings.SelectedIndexChanged += new System.EventHandler(this.lstSubStrings_SelectedIndexChanged);
 			// 
 			// lblOriginal
 			// 
 			this.lblOriginal.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblOriginal.Location = new System.Drawing.Point(592, 32);
+			this.lblOriginal.Location = new System.Drawing.Point(567, 32);
 			this.lblOriginal.Margin = new System.Windows.Forms.Padding(4);
 			this.lblOriginal.Name = "lblOriginal";
 			this.lblOriginal.Size = new System.Drawing.Size(48, 13);
@@ -431,31 +425,6 @@
 			// sfdSaveEntity
 			// 
 			this.sfdSaveEntity.Filter = "MSBT Files (*.msbt)|*.msbt";
-			// 
-			// lblSubStrings
-			// 
-			this.lblSubStrings.AutoSize = true;
-			this.lblSubStrings.Location = new System.Drawing.Point(288, 32);
-			this.lblSubStrings.Margin = new System.Windows.Forms.Padding(4);
-			this.lblSubStrings.Name = "lblSubStrings";
-			this.lblSubStrings.Size = new System.Drawing.Size(29, 13);
-			this.lblSubStrings.TabIndex = 14;
-			this.lblSubStrings.Text = "Sub:";
-			// 
-			// txtConcatenated
-			// 
-			this.txtConcatenated.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtConcatenated.BackColor = System.Drawing.SystemColors.Window;
-			this.txtConcatenated.Enabled = false;
-			this.txtConcatenated.Location = new System.Drawing.Point(292, 213);
-			this.txtConcatenated.Margin = new System.Windows.Forms.Padding(4);
-			this.txtConcatenated.Multiline = true;
-			this.txtConcatenated.Name = "txtConcatenated";
-			this.txtConcatenated.ReadOnly = true;
-			this.txtConcatenated.Size = new System.Drawing.Size(550, 95);
-			this.txtConcatenated.TabIndex = 5;
-			this.txtConcatenated.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSelectAll_KeyDown);
 			// 
 			// btnAddLabel
 			// 
@@ -502,16 +471,6 @@
 			this.btnSaveLabel.UseVisualStyleBackColor = true;
 			this.btnSaveLabel.Click += new System.EventHandler(this.btnSaveLabel_Click);
 			// 
-			// searchDirectoryToolStripMenuItem
-			// 
-			this.searchDirectoryToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_search;
-			this.searchDirectoryToolStripMenuItem.Name = "searchDirectoryToolStripMenuItem";
-			this.searchDirectoryToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.F)));
-			this.searchDirectoryToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
-			this.searchDirectoryToolStripMenuItem.Text = "Search Directory";
-			this.searchDirectoryToolStripMenuItem.Click += new System.EventHandler(this.searchDirectoryToolStripMenuItem_Click);
-			// 
 			// frmMain
 			// 
 			this.AllowDrop = true;
@@ -522,8 +481,6 @@
 			this.Controls.Add(this.txtLabelName);
 			this.Controls.Add(this.btnDeleteLabel);
 			this.Controls.Add(this.btnAddLabel);
-			this.Controls.Add(this.txtConcatenated);
-			this.Controls.Add(this.lblSubStrings);
 			this.Controls.Add(this.lblOriginal);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this.stsMain);
@@ -576,13 +533,10 @@
 		  private System.Windows.Forms.OpenFileDialog ofdOpenFile;
 		  private System.Windows.Forms.SaveFileDialog sfdSaveEntity;
 		  private System.Windows.Forms.TextBox txtOriginal;
-		  private System.Windows.Forms.ListBox lstSubStrings;
-		  private System.Windows.Forms.Label lblSubStrings;
-		  private System.Windows.Forms.TextBox txtConcatenated;
 		  private System.Windows.Forms.ToolStripStatusLabel slbActions;
 		  private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem BG4ExplorerToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem CSVExportToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem extractUMSBTToolStripMenuItem;

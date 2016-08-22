@@ -76,6 +76,16 @@ namespace MsbtEditor
 				return BitConverter.ToUInt64(base.ReadBytes(8).Reverse().ToArray(), 0);
 		}
 
+		public string ReadString(int length)
+		{
+			return Encoding.ASCII.GetString(ReadBytes(length)).TrimEnd('\0');
+		}
+
+		public string ReadString(int length, Encoding encoding)
+		{
+			return encoding.GetString(ReadBytes(length)).TrimEnd('\0');
+		}
+
 		public string PeekString(int length = 4)
 		{
 			List<byte> bytes = new List<byte>();
@@ -165,6 +175,11 @@ namespace MsbtEditor
 				base.Write(value);
 			else
 				base.Write(BitConverter.GetBytes(value).Reverse().ToArray());
+		}
+
+		public void WriteASCII(string value)
+		{
+			base.Write(Encoding.ASCII.GetBytes(value));
 		}
 	}
 }

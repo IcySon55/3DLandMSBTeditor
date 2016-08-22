@@ -157,22 +157,18 @@ namespace MsbtEditor
 		private void LoadFile()
 		{
 			lstStrings.Items.Clear();
-			lstSubStrings.Items.Clear();
 
-			if (_msbt.HasLabels)
+			for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
 			{
-				lstStrings.Sorted = true;
-				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
+				if (_msbt.HasLabels)
 				{
+					lstStrings.Sorted = true;
 					lstStrings.Items.Add(_msbt.LBL1.Labels[i]);
 				}
-			}
-			else
-			{
-				lstStrings.Sorted = false;
-				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
+				else
 				{
-					lstStrings.Items.Add(_msbt.TXT2.Entries[i]);
+					lstStrings.Sorted = false;
+					lstStrings.Items.Add(_msbt.TXT2.Strings[i]);
 				}
 			}
 
@@ -207,7 +203,6 @@ namespace MsbtEditor
 				_hasChanges = false;
 				UpdateTextView();
 				UpdateOriginalText();
-				UpdateTextPreview();
 				UpdateHexView();
 				UpdateForm();
 			}
@@ -219,36 +214,12 @@ namespace MsbtEditor
 
 		private void lstStrings_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			Entry entry = (Entry)lstStrings.SelectedItem;
+			IEntry ent = (IEntry)lstStrings.SelectedItem;
 
-			lstSubStrings.Items.Clear();
-			for (int i = 0; i < _msbt.TXT2.Entries[entry.Index].Values.Count; i++)
-			{
-				Entry subEntry = new Entry();
-				subEntry.Index = i;
-
-				lstSubStrings.Items.Add(subEntry);
-
-				if (lstSubStrings.Items.Count > 0)
-					lstSubStrings.SelectedIndex = 0;
-			}
-
-			txtLabelName.Text = entry.ToString();
-		}
-
-		private void lstSubStrings_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			Entry entry = (Entry)lstStrings.SelectedItem;
-			Value val = _msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex];
-
-			txtEdit.Enabled = val.Editable;
-			txtOriginal.Enabled = val.Editable;
-			txtConcatenated.Enabled = val.Editable;
-			hbxHexView.Enabled = val.Editable;
+			txtLabelName.Text = ent.ToString();
 
 			UpdateTextView();
 			UpdateOriginalText();
-			UpdateTextPreview();
 			UpdateHexView();
 		}
 
@@ -257,27 +228,9 @@ namespace MsbtEditor
 			if (keyData == Keys.Tab || keyData == (Keys.Tab | Keys.Shift))
 			{
 				if (keyData == (Keys.Tab | Keys.Shift))
-				{
-					if (lstSubStrings.Items.Count > 1 && lstSubStrings.SelectedIndex - 1 >= 0)
-						lstSubStrings.SelectedIndex -= 1;
-					else
-					{
-						lstStrings.SelectedIndex -= (lstStrings.SelectedIndex - 1 >= 0 ? 1 : (lstStrings.Items.Count - 1) * -1);
-						if (lstSubStrings.Items.Count > 1)
-							lstSubStrings.SelectedIndex = lstSubStrings.Items.Count - 1;
-					}
-				}
+					lstStrings.SelectedIndex -= (lstStrings.SelectedIndex - 1 >= 0 ? 1 : (lstStrings.Items.Count - 1) * -1);
 				else
-				{
-					if (lstSubStrings.Items.Count > 1 && lstSubStrings.SelectedIndex + 1 < lstSubStrings.Items.Count)
-						lstSubStrings.SelectedIndex += 1;
-					else
-					{
-						lstStrings.SelectedIndex += (lstStrings.SelectedIndex + 1 < lstStrings.Items.Count ? 1 : (lstStrings.Items.Count - 1) * -1);
-						if (lstSubStrings.Items.Count > 1)
-							lstSubStrings.SelectedIndex = 0;
-					}
-				}
+					lstStrings.SelectedIndex += (lstStrings.SelectedIndex + 1 < lstStrings.Items.Count ? 1 : (lstStrings.Items.Count - 1) * -1);
 
 				return true;
 			}
@@ -309,54 +262,47 @@ namespace MsbtEditor
 		{
 			string result = txtEdit.Text;
 
-			Entry entry = (Entry)lstStrings.SelectedItem;
-			_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data = entry.FileEncoding.GetBytes(result.Replace("\r\n", "\n"));
+			IEntry ent = (IEntry)lstStrings.SelectedItem;
+			ent.Value = _msbt.FileEncoding.GetBytes(result.Replace("\r\n", "\n").Replace(@"\0", "\0") + "\0");
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
 
-			UpdateTextPreview();
 			UpdateHexView();
 			UpdateForm();
 		}
 
-		private void UpdateTextView()
-		{
-			Entry entry = (Entry)lstStrings.SelectedItem;
-
-			txtEdit.Text = entry.FileEncoding.GetString(_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
-
-			slbAddress.Text = "String: " + (entry.Index + 1) + "/" + (lstSubStrings.SelectedIndex + 1);
-		}
-
-		private void UpdateOriginalText()
-		{
-			Entry entry = (Entry)lstStrings.SelectedItem;
-
-			txtOriginal.Text = entry.FileEncoding.GetString(_msbt.TXT2.OriginalEntries[entry.Index].Values[lstSubStrings.SelectedIndex].Data).Replace("\n", "\r\n");
-		}
-
-		private void UpdateTextPreview()
-		{
-			txtConcatenated.Text = _msbt.TXT2.Entries[((Entry)lstStrings.SelectedItem).Index].Preview();
-		}
-
-		protected void byteProvider_Changed(object sender, EventArgs e)
+		protected void hbxEdit_Changed(object sender, EventArgs e)
 		{
 			DynamicFileByteProvider dfbp = (DynamicFileByteProvider)sender;
 
-			Entry entry = (Entry)lstStrings.SelectedItem;
+			IEntry ent = (IEntry)lstStrings.SelectedItem;
 			List<byte> bytes = new List<byte>();
 			for (int i = 0; i < (int)dfbp.Length; i++)
 				bytes.Add(dfbp.ReadByte(i));
-			_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data = bytes.ToArray();
+			ent.Value = bytes.ToArray();
 
 			UpdateTextView();
-			UpdateTextPreview();
 			UpdateForm();
 
 			if (txtEdit.Text != txtOriginal.Text)
 				_hasChanges = true;
+		}
+
+		private void UpdateTextView()
+		{
+			IEntry ent = (IEntry)lstStrings.SelectedItem;
+
+			txtEdit.Text = _msbt.FileEncoding.GetString(ent.Value).Replace("\n", "\r\n").TrimEnd('\0').Replace("\0", @"\0") + "\0";
+
+			slbAddress.Text = "String: " + (ent.Index + 1);
+		}
+
+		private void UpdateOriginalText()
+		{
+			IEntry ent = (IEntry)lstStrings.SelectedItem;
+
+			txtOriginal.Text = _msbt.FileEncoding.GetString(_msbt.TXT2.OriginalStrings[(int)ent.Index].Value).Replace("\n", "\r\n").TrimEnd('\0').Replace("\0", @"\0") + "\0";
 		}
 
 		private void UpdateHexView()
@@ -365,11 +311,11 @@ namespace MsbtEditor
 
 			try
 			{
-				Entry entry = (Entry)lstStrings.SelectedItem;
-				MemoryStream strm = new MemoryStream(_msbt.TXT2.Entries[entry.Index].Values[lstSubStrings.SelectedIndex].Data);
+				IEntry ent = (IEntry)lstStrings.SelectedItem;
+				MemoryStream strm = new MemoryStream(ent.Value);
 
 				dfbp = new DynamicFileByteProvider(strm);
-				dfbp.Changed += new EventHandler(byteProvider_Changed);
+				dfbp.Changed += new EventHandler(hbxEdit_Changed);
 			}
 			catch (Exception)
 			{ }
@@ -385,17 +331,15 @@ namespace MsbtEditor
 			saveToolStripMenuItem.Enabled = _fileOpen;
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
 			findToolStripMenuItem.Enabled = _fileOpen;
-			exportToolStripMenuItem.Enabled = _fileOpen;
+			CSVExportToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
 			txtLabelName.Enabled = _fileOpen;
-			btnSaveLabel.Enabled = _fileOpen;
-			btnAddLabel.Enabled = _fileOpen;
-			btnDeleteLabel.Enabled = _fileOpen;
-			lstSubStrings.Enabled = _fileOpen;
+			btnSaveLabel.Enabled = _fileOpen && _msbt.HasLabels;
+			btnAddLabel.Enabled = _fileOpen && _msbt.HasLabels;
+			btnDeleteLabel.Enabled = _fileOpen && _msbt.HasLabels;
 			txtEdit.Enabled = _fileOpen;
 			txtOriginal.Enabled = _fileOpen;
-			txtConcatenated.Enabled = _fileOpen;
 			hbxHexView.Enabled = _fileOpen;
 		}
 
@@ -405,67 +349,18 @@ namespace MsbtEditor
 		}
 
 		// Tools
-		private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+		private void CSVExportToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			StringBuilder sb = new StringBuilder();
-
-			List<string> row = new List<string>();
-			if (_msbt.HasLabels)
-			{
-				sb.AppendLine("LabelOrder,Label,StringOrder,String");
-
-				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
-				{
-					Entry label = _msbt.LBL1.Labels[i];
-
-					// Label
-					row.Add((i + 1).ToString());
-					row.Add(label.ToString());
-
-					// Entry
-					row.Add((label.Index + 1).ToString());
-					row.Add("\"" + _msbt.TXT2.Entries[label.Index].Preview().Replace("\"", "\"\"") + "\"");
-
-					sb.AppendLine(String.Join(",", row.ToArray()));
-					row.Clear();
-				}
-			}
-			else
-			{
-				sb.AppendLine("StringOrder,String");
-
-				for (int i = 0; i < _msbt.TXT2.NumberOfStrings; i++)
-				{
-					Entry entry = _msbt.TXT2.Entries[i];
-
-					// Entry
-					row.Add((i + 1).ToString());
-					row.Add("\"" + entry.Preview().Replace("\"", "\"\"") + "\"");
-
-					sb.AppendLine(String.Join(",", row.ToArray()));
-					row.Clear();
-				}
-			}
-
 			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.Title = "Saving ";
+			sfd.Title = "Exportig to CSV...";
 			sfd.Filter = "Comma Separated Values (*.csv)|*.csv";
 			sfd.InitialDirectory = Settings.Default.InitialDirectory;
 
 			if (sfd.ShowDialog() == DialogResult.OK)
 			{
-				try
-				{
-					FileStream fs = new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write, FileShare.None);
-					BinaryWriter bw = new BinaryWriter(fs);
-					bw.Write(new byte[] { 0xEF, 0xBB, 0xBF });
-					bw.Write(sb.ToString().ToCharArray());
-					bw.Close();
-				}
-				catch (IOException ioex)
-				{
-					MessageBox.Show(ioex.Message, "File Access Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
+				string result = _msbt.ExportToCSV(sfd.FileName);
+
+				MessageBox.Show(result, "CSV Export Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 		}
 
@@ -548,7 +443,7 @@ namespace MsbtEditor
 		private void findToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			frmSearch search = new frmSearch();
-			search.Msbt = _msbt;
+			search.msbt = _msbt;
 			search.StartPosition = FormStartPosition.CenterParent;
 			search.ShowDialog();
 
@@ -652,9 +547,9 @@ namespace MsbtEditor
 			{
 				bool taken = false;
 
-				foreach (Entry lbl in _msbt.LBL1.Labels)
+				foreach (Label lbl in _msbt.LBL1.Labels)
 				{
-					if (Encoding.ASCII.GetString(lbl.Value) == txtLabelName.Text.Trim())
+					if (lbl.Name == txtLabelName.Text.Trim())
 					{
 						taken = true;
 						break;
@@ -663,8 +558,8 @@ namespace MsbtEditor
 
 				if (!taken)
 				{
-					Entry entry = (Entry)lstStrings.SelectedItem;
-					entry.Value = Encoding.ASCII.GetBytes(txtLabelName.Text.Trim());
+					IEntry ent = (IEntry)lstStrings.SelectedItem;
+					ent.Value = Encoding.ASCII.GetBytes(txtLabelName.Text.Trim());
 					int selectedIndex = lstStrings.SelectedIndex;
 					LoadFile();
 					if (lstStrings.Items.Count > selectedIndex)
@@ -683,9 +578,9 @@ namespace MsbtEditor
 			{
 				bool taken = false;
 
-				foreach (Entry lbl in _msbt.LBL1.Labels)
+				foreach (Label lbl in _msbt.LBL1.Labels)
 				{
-					if (Encoding.ASCII.GetString(lbl.Value) == txtLabelName.Text.Trim())
+					if (lbl.Name == txtLabelName.Text.Trim())
 					{
 						taken = true;
 						break;
@@ -694,7 +589,7 @@ namespace MsbtEditor
 
 				if (!taken)
 				{
-					Entry lbl = _msbt.AddEntry(txtLabelName.Text.Trim());
+					Label lbl = _msbt.AddLabel(txtLabelName.Text.Trim());
 					LoadFile();
 					if (lstStrings.Items.Contains(lbl))
 						lstStrings.SelectedIndex = lstStrings.Items.IndexOf(lbl);
@@ -703,22 +598,20 @@ namespace MsbtEditor
 					MessageBox.Show("The label name you entered already exists. The new label name must be unique.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 			else
-				MessageBox.Show("The label name you entered is not valid. You can only use alphanumeric values: a-z, A-Z, 0-9 and _ (underscore). The length is also limited to 64 characters.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show("The label name you entered is not valid. You can only use the alphanumeric values: a-z, A-Z, 0-9 and _ (underscore). The length is also limited to 64 characters.", "Invalid Label Name", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
 		private void btnDeleteLabel_Click(object sender, EventArgs e)
 		{
-			Entry entry = (Entry)lstStrings.SelectedItem;
-			string label = Encoding.ASCII.GetString(entry.Value);
+			Label lbl = (Label)lstStrings.SelectedItem;
 
-			DialogResult dr = MessageBox.Show("Are you sure you want to delete '" + label + "'?", "Delete Label?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+			DialogResult dr = MessageBox.Show("Are you sure you want to delete '" + lbl.Name + "'?", "Delete Label?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 			if (dr == DialogResult.Yes)
 			{
-				_msbt.RemoveEntry(entry);
+				_msbt.RemoveLabel(lbl);
 				int selectedIndex = lstStrings.SelectedIndex;
 				LoadFile();
-				if (lstStrings.Items.Count > selectedIndex)
-					lstStrings.SelectedIndex = selectedIndex;
+				lstStrings.SelectedIndex = lstStrings.Items.Count > selectedIndex ? selectedIndex : 0;
 			}
 		}
 	}

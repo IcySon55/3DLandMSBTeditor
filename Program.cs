@@ -12,12 +12,28 @@ namespace MsbtEditor
 		/// <summary>
 		/// Punto di ingresso principale dell'applicazione.
 		/// </summary>
+
+#if DEBUG
+		[DllImport("kernel32.dll", SetLastError = true)]
+		static extern bool AllocConsole();
+		[DllImport("kernel32.dll", SetLastError = true)]
+		static extern bool FreeConsole();
+#endif
+
 		[STAThread]
 		static void Main(string[] args)
 		{
+#if DEBUG
+			AllocConsole();
+#endif
+
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new frmMain(args));
+
+#if DEBUG
+			FreeConsole();
+#endif
 		}
 	}
 }

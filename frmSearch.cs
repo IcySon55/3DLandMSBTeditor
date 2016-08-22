@@ -12,8 +12,8 @@ namespace MsbtEditor
 {
 	public partial class frmSearch : Form
 	{
-		public MSBT Msbt { get; set; }
-		public Entry Return { get; set; }
+		public MSBT msbt { get; set; }
+		public IEntry Return { get; set; }
 
 		public frmSearch()
 		{
@@ -33,37 +33,24 @@ namespace MsbtEditor
 
 			if (txtFindText.Text.Trim() != string.Empty)
 			{
-				for (int i = 0; i < Msbt.TXT2.NumberOfStrings; i++)
+				for (int i = 0; i < msbt.TXT2.NumberOfStrings; i++)
 				{
-					if (Msbt.HasLabels)
-					{
-						Entry entry = Msbt.LBL1.Labels[i];
+					IEntry ent = null;
 
-						if (chkMatchCase.Checked)
-						{
-							if (Msbt.TXT2.Entries[entry.Index].Preview().Contains(txtFindText.Text))
-								lstResults.Items.Add(entry);
-						}
-						else
-						{
-							if (Msbt.TXT2.Entries[entry.Index].Preview().ToLower().Contains(txtFindText.Text.ToLower()))
-								lstResults.Items.Add(entry);
-						}
+					if (msbt.HasLabels)
+						ent = msbt.LBL1.Labels[i];
+					else
+						ent = msbt.TXT2.Strings[i];
+
+					if (chkMatchCase.Checked)
+					{
+						if (msbt.FileEncoding.GetString(ent.Value).Contains(txtFindText.Text))
+							lstResults.Items.Add(ent);
 					}
 					else
 					{
-						Entry entry = Msbt.TXT2.Entries[i];
-
-						if (chkMatchCase.Checked)
-						{
-							if (entry.Preview().Contains(txtFindText.Text))
-								lstResults.Items.Add(entry);
-						}
-						else
-						{
-							if (entry.Preview().ToLower().Contains(txtFindText.Text.ToLower()))
-								lstResults.Items.Add(entry);
-						}
+						if (msbt.FileEncoding.GetString(ent.Value).ToLower().Contains(txtFindText.Text.ToLower()))
+							lstResults.Items.Add(ent);
 					}
 				}
 			}
@@ -90,7 +77,7 @@ namespace MsbtEditor
 		{
 			if (lstResults.Items.Count > 0 && lstResults.SelectedIndex >= 0)
 			{
-				Return = (Entry)lstResults.SelectedItem;
+				Return = (IEntry)lstResults.SelectedItem;
 				this.Close();
 			}
 		}

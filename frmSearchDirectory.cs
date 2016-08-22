@@ -16,7 +16,7 @@ namespace MsbtEditor
 		public class SearchResult
 		{
 			public string Filename { get; set; }
-			public Entry Entry { get; set; }
+			public IEntry Entry { get; set; }
 			public int Index { get; set; }
 
 			public override string ToString()
@@ -81,85 +81,53 @@ namespace MsbtEditor
 							continue;
 						}
 
-						lstTemp.Items.Clear();
 						if (msbt.HasLabels)
-						{
 							lstTemp.Sorted = true;
-							for (int i = 0; i < msbt.TXT2.NumberOfStrings; i++)
-							{
-								lstTemp.Items.Add(msbt.LBL1.Labels[i]);
-							}
-						}
 						else
-						{
 							lstTemp.Sorted = false;
-							for (int i = 0; i < msbt.TXT2.NumberOfStrings; i++)
-							{
-								lstTemp.Items.Add(msbt.TXT2.Entries[i]);
-							}
+
+						lstTemp.Items.Clear();
+						for (int i = 0; i < msbt.TXT2.NumberOfStrings; i++)
+						{
+							if (msbt.HasLabels)
+								lstTemp.Items.Add(msbt.LBL1.Labels[i]);
+							else
+								lstTemp.Items.Add(msbt.TXT2.Strings[i]);
 						}
 
 						// Find the strings
 						for (int i = 0; i < msbt.TXT2.NumberOfStrings; i++)
 						{
+							IEntry ent = null;
+
 							if (msbt.HasLabels)
+								ent = msbt.LBL1.Labels[i];
+							else
+								ent = msbt.TXT2.Strings[i];
+
+							if (lstTemp.Items.Contains(ent))
+								lstTemp.SelectedItem = ent;
+
+							if (chkMatchCase.Checked)
 							{
-								Entry entry = msbt.LBL1.Labels[i];
-
-								if (lstTemp.Items.Contains(entry))
-									lstTemp.SelectedItem = entry;
-
-								if (chkMatchCase.Checked)
+								if (msbt.FileEncoding.GetString(ent.Value).Contains(txtFindText.Text))
 								{
-									if (msbt.TXT2.Entries[entry.Index].Preview().Contains(txtFindText.Text))
-									{
-										SearchResult result = new SearchResult();
-										result.Filename = file;
-										result.Entry = entry;
-										result.Index = lstTemp.SelectedIndex;
-										lstResults.Items.Add(result);
-									}
-								}
-								else
-								{
-									if (msbt.TXT2.Entries[entry.Index].Preview().ToLower().Contains(txtFindText.Text.ToLower()))
-									{
-										SearchResult result = new SearchResult();
-										result.Filename = file;
-										result.Entry = entry;
-										result.Index = lstTemp.SelectedIndex;
-										lstResults.Items.Add(result);
-									}
+									SearchResult result = new SearchResult();
+									result.Filename = file;
+									result.Entry = ent;
+									result.Index = lstTemp.SelectedIndex;
+									lstResults.Items.Add(result);
 								}
 							}
 							else
 							{
-								Entry entry = msbt.TXT2.Entries[i];
-
-								if (lstTemp.Items.Contains(entry))
-									lstTemp.SelectedItem = entry;
-
-								if (chkMatchCase.Checked)
+								if (msbt.FileEncoding.GetString(ent.Value).ToLower().Contains(txtFindText.Text.ToLower()))
 								{
-									if (entry.Preview().Contains(txtFindText.Text))
-									{
-										SearchResult result = new SearchResult();
-										result.Filename = file;
-										result.Entry = entry;
-										result.Index = lstTemp.SelectedIndex;
-										lstResults.Items.Add(result);
-									}
-								}
-								else
-								{
-									if (entry.Preview().ToLower().Contains(txtFindText.Text.ToLower()))
-									{
-										SearchResult result = new SearchResult();
-										result.Filename = file;
-										result.Entry = entry;
-										result.Index = lstTemp.SelectedIndex;
-										lstResults.Items.Add(result);
-									}
+									SearchResult result = new SearchResult();
+									result.Filename = file;
+									result.Entry = ent;
+									result.Index = lstTemp.SelectedIndex;
+									lstResults.Items.Add(result);
 								}
 							}
 						}
