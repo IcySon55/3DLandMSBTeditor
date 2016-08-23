@@ -37,7 +37,7 @@ namespace MsbtEditor.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("MSBT Editor Reloaded v0.9.2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MSBT Editor Reloaded v0.9.3")]
         public string ApplicationName {
             get {
                 return ((string)(this["ApplicationName"]));
@@ -113,6 +113,18 @@ namespace MsbtEditor.Properties {
             }
             set {
                 this["SearchSubfolders"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string XMSBTDirectory {
+            get {
+                return ((string)(this["XMSBTDirectory"]));
+            }
+            set {
+                this["XMSBTDirectory"] = value;
             }
         }
     }

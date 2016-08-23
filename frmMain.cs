@@ -332,6 +332,9 @@ namespace MsbtEditor
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
 			findToolStripMenuItem.Enabled = _fileOpen;
 			CSVExportToolStripMenuItem.Enabled = _fileOpen;
+			xMSBTToolStripMenuItem.Enabled = _fileOpen;
+			exportXMSBTToolStripMenuItem.Enabled = _fileOpen;
+			importXMSBTToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
 			txtLabelName.Enabled = _fileOpen;
@@ -466,6 +469,53 @@ namespace MsbtEditor
 				if (lstStrings.Items.Count >= search.Return.Index)
 					lstStrings.SelectedIndex = search.Return.Index;
 			}
+		}
+
+		private void exportXMSBTToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.FileName = _msbt.File.Name.Substring(0, _msbt.File.Name.Length - 4) + "xmsbt";
+			sfd.Title = "Save XMSBT As...";
+			sfd.Filter = "XMSBT (*.xmsbt)|*.xmsbt";
+			sfd.InitialDirectory = Settings.Default.XMSBTDirectory;
+			sfd.AddExtension = true;
+
+			if (sfd.ShowDialog() == DialogResult.OK)
+			{
+				Settings.Default.XMSBTDirectory = new FileInfo(sfd.FileName).DirectoryName;
+
+				string result = _msbt.ExportXMSBT(sfd.FileName);
+
+				MessageBox.Show(result, "XMSBT Export Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
+		}
+
+		private void importXMSBTToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Select an XMSBT File...";
+			ofd.Filter = "XMSBT (*.xmsbt)|*.xmsbt";
+			ofd.InitialDirectory = Settings.Default.XMSBTDirectory;
+
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				Settings.Default.XMSBTDirectory = new FileInfo(ofd.FileName).DirectoryName;
+
+				if (File.Exists(ofd.FileName))
+				{
+					string result = _msbt.ImportXMSBT(ofd.FileName);
+
+					MessageBox.Show(result, "XMSBT Import Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			LoadFile();
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
 		}
 
 		private void extractToolStripMenuItem_Click(object sender, EventArgs e)

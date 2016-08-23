@@ -2,7 +2,7 @@
 This is a heavily modified version of Exelix11's MSBT file editor.
 
 ### Supported MSBT Sections
-* LBL1 - Full Support
+* LBL1 - Full support
 * NLI1 - Preliminary support. Most content is unknown.
 * ATO1 - Preliminary support. Content is all 0xFF without padding.
 * ATR1 - Preliminary support. Content is usually blank.
@@ -22,6 +22,12 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 * Animal Crossing: New Leaf - Supported.
 * Tokyo Mirage Sessions #FE - Supported.
 * Others may be supported, need feedback.
+
+### XMSBT Translation Tools
+* This is the MSBT translator's dream feature! This format allows translators to work together and collaborate on the same file(s) without losing any work due to files being overwritten or files being impossible to merge easily.
+* Export an open MSBT file to the human readable XMSBT (XML) format.
+* Import XMSBT files into an open MSBT file. Text is imported by matching the label names. Names that do not match are not imported.
+* I plan to add batch functionality for XMSBT in a later version.
 
 ### Other Features
 * Find - I've added the ability to search for strings in the file making translation that much easier.
