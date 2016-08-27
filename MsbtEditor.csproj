@@ -129,6 +129,8 @@
     <None Include="images\find.ico" />
     <Content Include="images\menu-about.png" />
     <Content Include="images\menu-add.png" />
+    <Content Include="images\menu-batch-export.png" />
+    <Content Include="images\menu-batch-import.png" />
     <Content Include="images\menu-copy.png" />
     <Content Include="images\menu-delete.png" />
     <Content Include="images\menu-down.png" />
@@ -137,6 +139,7 @@
     <None Include="images\menu-extract.png" />
     <Content Include="images\menu-field-properties.png" />
     <None Include="images\menu-find.png" />
+    <None Include="images\menu-import.png" />
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />
     <Content Include="images\menu-paste.png" />

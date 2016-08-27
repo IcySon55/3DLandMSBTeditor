@@ -331,8 +331,7 @@ namespace MsbtEditor
 			saveToolStripMenuItem.Enabled = _fileOpen;
 			saveAsToolStripMenuItem.Enabled = _fileOpen;
 			findToolStripMenuItem.Enabled = _fileOpen;
-			CSVExportToolStripMenuItem.Enabled = _fileOpen;
-			xMSBTToolStripMenuItem.Enabled = _fileOpen;
+			exportCSVToolStripMenuItem.Enabled = _fileOpen;
 			exportXMSBTToolStripMenuItem.Enabled = _fileOpen;
 			importXMSBTToolStripMenuItem.Enabled = _fileOpen;
 
@@ -352,7 +351,7 @@ namespace MsbtEditor
 		}
 
 		// Tools
-		private void CSVExportToolStripMenuItem_Click(object sender, EventArgs e)
+		private void exportCSVToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			SaveFileDialog sfd = new SaveFileDialog();
 			sfd.Title = "Exportig to CSV...";
@@ -506,7 +505,9 @@ namespace MsbtEditor
 
 				if (File.Exists(ofd.FileName))
 				{
-					string result = _msbt.ImportXMSBT(ofd.FileName);
+					bool addLabels = MessageBox.Show("Add labels in the XMSBT that don't exist in the MSBT file?", "Add Labels?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+					string result = _msbt.ImportXMSBT(ofd.FileName, addLabels);
 
 					MessageBox.Show(result, "XMSBT Import Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
@@ -518,7 +519,123 @@ namespace MsbtEditor
 			Settings.Default.Reload();
 		}
 
-		private void extractToolStripMenuItem_Click(object sender, EventArgs e)
+		private void batchExportXMSBTToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.Description = "Select a directory containing MSBT files:";
+			fbd.ShowNewFolderButton = false;
+			fbd.SelectedPath = Settings.Default.XMSBTDirectory;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				Settings.Default.XMSBTDirectory = fbd.SelectedPath;
+
+				if (Directory.Exists(fbd.SelectedPath))
+				{
+					DirectoryInfo dir = new DirectoryInfo(fbd.SelectedPath);
+					FileInfo[] files = dir.GetFiles("*.msbt");
+					bool overwrite = true;
+					string result = "";
+
+					if (dir.GetFiles("*.xmsbt").Length > 0)
+						overwrite = MessageBox.Show("Is it OK to overwrite XMSBT files in the directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+					if (files.Length > 0)
+					{
+						foreach (FileInfo file in files)
+						{
+							try
+							{
+								MSBT msbt = new MSBT(file.FullName);
+								msbt.ExportXMSBT(file.FullName.Substring(0, file.FullName.Length - 4) + "xmsbt", overwrite);
+							}
+							catch (Exception ex)
+							{
+								result = ex.Message;
+							}
+						}
+
+						if (result.Length == 0)
+							result = "Successfully batch exported files to XMSBT.";
+					}
+					else
+						result = "There are no MSBT files to export in the selected directory.";
+
+					MessageBox.Show(result, "XMSBT Batch Export Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
+		}
+
+		private void batchImportXMSBTToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			FolderBrowserDialog fbd = new FolderBrowserDialog();
+			fbd.Description = "Select a directory containing MSBT and XMSBT files of the same name:";
+			fbd.ShowNewFolderButton = false;
+			fbd.SelectedPath = Settings.Default.XMSBTDirectory;
+
+			if (fbd.ShowDialog() == DialogResult.OK)
+			{
+				Settings.Default.XMSBTDirectory = fbd.SelectedPath;
+
+				if (Directory.Exists(fbd.SelectedPath))
+				{
+					DirectoryInfo dir = new DirectoryInfo(fbd.SelectedPath);
+					FileInfo[] msbtFiles = dir.GetFiles("*.msbt");
+					FileInfo[] xmsbtFiles = dir.GetFiles("*.xmsbt");
+					string result = "";
+
+					bool addLabels = MessageBox.Show("Add labels in the XMSBT files that don't exist in the MSBT files?", "Add Labels?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+					Dictionary<string, FileInfo> matches = new Dictionary<string, FileInfo>();
+
+					foreach (FileInfo file in msbtFiles)
+					{
+						string name = file.FullName.Substring(0, file.FullName.Length - 4);
+
+						foreach (FileInfo xFile in xmsbtFiles)
+						{
+							if (name == xFile.FullName.Substring(0, xFile.FullName.Length - 5))
+							{
+								matches.Add(name, file);
+								break;
+							}
+						}
+					}
+
+					if (matches.Count > 0)
+					{
+						foreach (string file in matches.Keys)
+						{
+							try
+							{
+								MSBT msbt = new MSBT(matches[file].FullName);
+								msbt.ImportXMSBT(matches[file].FullName.Substring(0, matches[file].FullName.Length - 4) + "xmsbt", addLabels);
+								msbt.Save();
+							}
+							catch (Exception ex)
+							{
+								result = ex.Message;
+							}
+						}
+
+						if (result.Length == 0)
+							result = "Successfully batch imported from XMSBT.";
+					}
+					else
+						result = "There are no MSBT files that match an XMSBT file in the selected directory.";
+
+					MessageBox.Show(result, "XMSBT Batch Import Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
+		}
+
+		private void extractUMSBTToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Title = "Select a UMSBT File...";
@@ -544,7 +661,7 @@ namespace MsbtEditor
 							bool overwrite = true;
 
 							if (new DirectoryInfo(fbd.SelectedPath).GetFiles("*.msbt").Length > 0)
-								overwrite = MessageBox.Show("Is it OK to overwrite MSBT files in the destination directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.Yes ? true : false;
+								overwrite = MessageBox.Show("Is it OK to overwrite MSBT files in the destination directory?", "Overwrite?", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
 
 							string result = MsbtEditor.UMSBT.UMSBT.Extract(ofd.FileName, fbd.SelectedPath, overwrite);
 
@@ -558,7 +675,7 @@ namespace MsbtEditor
 			Settings.Default.Reload();
 		}
 
-		private void packToolStripMenuItem_Click(object sender, EventArgs e)
+		private void packUMSBTToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			FolderBrowserDialog fbd = new FolderBrowserDialog();
 			fbd.Description = "Select the source directory containing MSBT files:";

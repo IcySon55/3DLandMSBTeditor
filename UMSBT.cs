@@ -63,16 +63,19 @@ namespace MsbtEditor.UMSBT
 					{
 						FileEntry fe = entries[i];
 						string extension = ".msbt";
+						string outFile = Path.Combine(path, fe.Index.ToString("00000000") + extension);
 
 						Debug.Print("[" + fe.Offset.ToString("X8") + "] " + fe.Index + extension);
 
-						FileInfo fi = new FileInfo(filename);
-						FileStream fsr = new FileStream(Path.Combine(path, fe.Index.ToString("00000000") + extension), FileMode.Create, FileAccess.Write, FileShare.None);
-						BinaryWriterX bw = new BinaryWriterX(fsr);
+						if (!File.Exists(outFile) || (File.Exists(outFile) && overwrite))
+						{
+							FileStream fsr = new FileStream(outFile, FileMode.Create, FileAccess.Write, FileShare.None);
+							BinaryWriterX bw = new BinaryWriterX(fsr);
 
-						br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);
-						bw.Write(br.ReadBytes((int)fe.Size));
-						bw.Close();
+							br.BaseStream.Seek(fe.Offset, SeekOrigin.Begin);
+							bw.Write(br.ReadBytes((int)fe.Size));
+							bw.Close();
+						}
 					}
 
 					result = entries.Count + " files were found and " + entries.Count + " files were successfully extracted!";

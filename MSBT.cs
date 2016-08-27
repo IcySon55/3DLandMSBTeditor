@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace MsbtEditor
@@ -796,49 +797,56 @@ namespace MsbtEditor
 			return result;
 		}
 
-		public string ExportXMSBT(string filename)
+		public string ExportXMSBT(string filename, bool overwrite = true)
 		{
 			string result = "Successfully exported to XMSBT.";
 
 			try
 			{
-				if (HasLabels)
+				if (!System.IO.File.Exists(filename) || (System.IO.File.Exists(filename) && overwrite))
 				{
-					XmlDocument xmlDocument = new XmlDocument();
-
-					XmlWriterSettings xmlSettings = new XmlWriterSettings();
-					xmlSettings.Encoding = FileEncoding;
-					xmlSettings.Indent = true;
-					xmlSettings.IndentChars = "\t";
-					xmlSettings.CheckCharacters = false;
-
-					XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", FileEncoding.WebName, null);
-					xmlDocument.AppendChild(xmlDeclaration);
-
-					XmlElement xmlRoot = xmlDocument.CreateElement("xmsbt");
-					xmlDocument.AppendChild(xmlRoot);
-
-					foreach (Label lbl in LBL1.Labels)
+					if (HasLabels)
 					{
-						XmlElement xmlEntry = xmlDocument.CreateElement("entry");
-						xmlRoot.AppendChild(xmlEntry);
+						XmlDocument xmlDocument = new XmlDocument();
 
-						XmlAttribute xmlLabelAttribute = xmlDocument.CreateAttribute("label");
-						xmlLabelAttribute.Value = lbl.Name;
-						xmlEntry.Attributes.Append(xmlLabelAttribute);
+						XmlWriterSettings xmlSettings = new XmlWriterSettings();
+						xmlSettings.Encoding = FileEncoding;
+						xmlSettings.Indent = true;
+						xmlSettings.IndentChars = "\t";
+						xmlSettings.CheckCharacters = false;
 
-						XmlElement xmlString = xmlDocument.CreateElement("string");
-						xmlString.InnerText = FileEncoding.GetString(lbl.String.Value).Replace("\n", "\r\n").TrimEnd('\0').Replace("\0", @"\0");
-						xmlEntry.AppendChild(xmlString);
+						XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", FileEncoding.WebName, null);
+						xmlDocument.AppendChild(xmlDeclaration);
+
+						XmlElement xmlRoot = xmlDocument.CreateElement("xmsbt");
+						xmlDocument.AppendChild(xmlRoot);
+
+						foreach (Label lbl in LBL1.Labels)
+						{
+							XmlElement xmlEntry = xmlDocument.CreateElement("entry");
+							xmlRoot.AppendChild(xmlEntry);
+
+							XmlAttribute xmlLabelAttribute = xmlDocument.CreateAttribute("label");
+							xmlLabelAttribute.Value = lbl.Name;
+							xmlEntry.Attributes.Append(xmlLabelAttribute);
+
+							XmlElement xmlString = xmlDocument.CreateElement("text");
+							xmlString.InnerText = FileEncoding.GetString(lbl.String.Value).Replace("\n", "\r\n").TrimEnd('\0').Replace("\0", @"\0");
+							xmlEntry.AppendChild(xmlString);
+						}
+
+						System.IO.StreamWriter stream = new StreamWriter(filename, false, FileEncoding);
+						xmlDocument.Save(XmlWriter.Create(stream, xmlSettings));
+						stream.Close();
 					}
-
-					System.IO.StreamWriter stream = new StreamWriter(filename, false, FileEncoding);
-					xmlDocument.Save(XmlWriter.Create(stream, xmlSettings));
-					stream.Close();
+					else
+					{
+						result = "XMSBT does not currently support files without an LBL1 section.";
+					}
 				}
 				else
 				{
-					result = "XMSBT does not currently support files without an LBL1 section.";
+					result = filename + " already exists and overwrite was set to false.";
 				}
 			}
 			catch (Exception ex)
@@ -849,7 +857,7 @@ namespace MsbtEditor
 			return result;
 		}
 
-		public string ImportXMSBT(string filename)
+		public string ImportXMSBT(string filename, bool addNew = false)
 		{
 			string result = "Successfully imported from XMSBT.";
 
@@ -862,15 +870,24 @@ namespace MsbtEditor
 
 					XmlNode xmlRoot = xmlDocument.SelectSingleNode("/xmsbt");
 
+					Dictionary<string, Label> labels = new Dictionary<string, Label>();
+					foreach (Label lbl in LBL1.Labels)
+						labels.Add(lbl.Name, lbl);
+
 					foreach (XmlNode entry in xmlRoot.SelectNodes("entry"))
 					{
 						string label = entry.Attributes["label"].Value;
-						byte[] str = FileEncoding.GetBytes(entry.SelectSingleNode("string").InnerText.Replace("\r\n", "\n").Replace(@"\0", "\0") + "\0");
+						byte[] str = FileEncoding.GetBytes(entry.SelectSingleNode("text").InnerText.Replace("\r\n", "\n").Replace(@"\0", "\0") + "\0");
 
-						foreach (Label lbl in LBL1.Labels)
+						if (labels.ContainsKey(label))
+							labels[label].String.Value = str;
+						else if (addNew)
 						{
-							if (lbl.Name == label)
+							if (label.Trim().Length <= MSBT.LabelMaxLength && Regex.IsMatch(label.Trim(), MSBT.LabelFilter))
+							{
+								Label lbl = AddLabel(label);
 								lbl.String.Value = str;
+							}
 						}
 					}
 				}

@@ -93,6 +93,26 @@ namespace MsbtEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_batch_export {
+            get {
+                object obj = ResourceManager.GetObject("menu_batch_export", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_batch_import {
+            get {
+                object obj = ResourceManager.GetObject("menu_batch_import", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_copy {
             get {
                 object obj = ResourceManager.GetObject("menu_copy", resourceCulture);
@@ -166,6 +186,16 @@ namespace MsbtEditor.Properties {
         internal static System.Drawing.Bitmap menu_find {
             get {
                 object obj = ResourceManager.GetObject("menu_find", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_import {
+            get {
+                object obj = ResourceManager.GetObject("menu_import", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

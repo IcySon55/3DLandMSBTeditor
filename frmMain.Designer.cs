@@ -38,18 +38,21 @@
 			this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.findToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.searchDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.xMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.xMSBTToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.importXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.CSVExportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.batchExportXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.batchImportXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.bG4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.BG4ExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.manageLZ11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.uMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.extractUMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.packUMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.lZ11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.decompressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.compressToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.extractUMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.extractToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.packToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.lstStrings = new System.Windows.Forms.ListBox();
@@ -81,6 +84,7 @@
 			this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
+            this.xMSBTToolStripMenuItem1,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
 			this.mnuMain.Location = new System.Drawing.Point(0, 0);
@@ -105,7 +109,7 @@
 			this.openToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_open;
 			this.openToolStripMenuItem.Name = "openToolStripMenuItem";
 			this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.openToolStripMenuItem.Text = "&Open";
 			this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
 			// 
@@ -114,7 +118,7 @@
 			this.saveToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save;
 			this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
 			this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.saveToolStripMenuItem.Text = "&Save";
 			this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
 			// 
@@ -123,21 +127,21 @@
 			this.saveAsToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_save_as;
 			this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
 			this.saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F12;
-			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.saveAsToolStripMenuItem.Text = "S&ave as...";
 			this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			this.exitToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_exit;
 			this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
 			this.exitToolStripMenuItem.Text = "E&xit";
 			this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
 			// 
@@ -169,79 +173,131 @@
 			this.searchDirectoryToolStripMenuItem.Text = "Search Directory";
 			this.searchDirectoryToolStripMenuItem.Click += new System.EventHandler(this.searchDirectoryToolStripMenuItem_Click);
 			// 
-			// toolsToolStripMenuItem
+			// xMSBTToolStripMenuItem1
 			// 
-			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.xMSBTToolStripMenuItem,
-            this.CSVExportToolStripMenuItem,
-            this.BG4ExplorerToolStripMenuItem,
-            this.extractUMSBTToolStripMenuItem,
-            this.manageLZ11ToolStripMenuItem});
-			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
-			this.toolsToolStripMenuItem.Text = "&Tools";
-			// 
-			// xMSBTToolStripMenuItem
-			// 
-			this.xMSBTToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.xMSBTToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportXMSBTToolStripMenuItem,
-            this.importXMSBTToolStripMenuItem});
-			this.xMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_database;
-			this.xMSBTToolStripMenuItem.Name = "xMSBTToolStripMenuItem";
-			this.xMSBTToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.xMSBTToolStripMenuItem.Text = "Manage &XMSBT";
+            this.importXMSBTToolStripMenuItem,
+            this.batchExportXMSBTToolStripMenuItem,
+            this.batchImportXMSBTToolStripMenuItem});
+			this.xMSBTToolStripMenuItem1.Name = "xMSBTToolStripMenuItem1";
+			this.xMSBTToolStripMenuItem1.Size = new System.Drawing.Size(57, 20);
+			this.xMSBTToolStripMenuItem1.Text = "XMSBT";
 			// 
 			// exportXMSBTToolStripMenuItem
 			// 
 			this.exportXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
 			this.exportXMSBTToolStripMenuItem.Name = "exportXMSBTToolStripMenuItem";
-			this.exportXMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+			this.exportXMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
 			this.exportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exportXMSBTToolStripMenuItem.Text = "&Export";
 			this.exportXMSBTToolStripMenuItem.Click += new System.EventHandler(this.exportXMSBTToolStripMenuItem_Click);
 			// 
 			// importXMSBTToolStripMenuItem
 			// 
-			this.importXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_extract;
+			this.importXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_import;
 			this.importXMSBTToolStripMenuItem.Name = "importXMSBTToolStripMenuItem";
-			this.importXMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
+			this.importXMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
 			this.importXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.importXMSBTToolStripMenuItem.Text = "&Import";
 			this.importXMSBTToolStripMenuItem.Click += new System.EventHandler(this.importXMSBTToolStripMenuItem_Click);
 			// 
-			// CSVExportToolStripMenuItem
+			// batchExportXMSBTToolStripMenuItem
 			// 
-			this.CSVExportToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
-			this.CSVExportToolStripMenuItem.Name = "CSVExportToolStripMenuItem";
-			this.CSVExportToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-			this.CSVExportToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.CSVExportToolStripMenuItem.Text = "&Export to CSV";
-			this.CSVExportToolStripMenuItem.Click += new System.EventHandler(this.CSVExportToolStripMenuItem_Click);
+			this.batchExportXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_batch_export;
+			this.batchExportXMSBTToolStripMenuItem.Name = "batchExportXMSBTToolStripMenuItem";
+			this.batchExportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.batchExportXMSBTToolStripMenuItem.Text = "Batch Export";
+			this.batchExportXMSBTToolStripMenuItem.Click += new System.EventHandler(this.batchExportXMSBTToolStripMenuItem_Click);
+			// 
+			// batchImportXMSBTToolStripMenuItem
+			// 
+			this.batchImportXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_batch_import;
+			this.batchImportXMSBTToolStripMenuItem.Name = "batchImportXMSBTToolStripMenuItem";
+			this.batchImportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.batchImportXMSBTToolStripMenuItem.Text = "Batch Import";
+			this.batchImportXMSBTToolStripMenuItem.Click += new System.EventHandler(this.batchImportXMSBTToolStripMenuItem_Click);
+			// 
+			// toolsToolStripMenuItem
+			// 
+			this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exportCSVToolStripMenuItem,
+            this.bG4ToolStripMenuItem,
+            this.uMSBTToolStripMenuItem,
+            this.lZ11ToolStripMenuItem});
+			this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+			this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+			this.toolsToolStripMenuItem.Text = "&Tools";
+			// 
+			// exportCSVToolStripMenuItem
+			// 
+			this.exportCSVToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
+			this.exportCSVToolStripMenuItem.Name = "exportCSVToolStripMenuItem";
+			this.exportCSVToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F7;
+			this.exportCSVToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+			this.exportCSVToolStripMenuItem.Text = "&Export to CSV";
+			this.exportCSVToolStripMenuItem.Click += new System.EventHandler(this.exportCSVToolStripMenuItem_Click);
+			// 
+			// bG4ToolStripMenuItem
+			// 
+			this.bG4ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.BG4ExplorerToolStripMenuItem});
+			this.bG4ToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_database;
+			this.bG4ToolStripMenuItem.Name = "bG4ToolStripMenuItem";
+			this.bG4ToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+			this.bG4ToolStripMenuItem.Text = "&BG4";
 			// 
 			// BG4ExplorerToolStripMenuItem
 			// 
 			this.BG4ExplorerToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
 			this.BG4ExplorerToolStripMenuItem.Name = "BG4ExplorerToolStripMenuItem";
-			this.BG4ExplorerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
-			this.BG4ExplorerToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.BG4ExplorerToolStripMenuItem.Text = "E&xtract BG4";
-			this.BG4ExplorerToolStripMenuItem.Click += new System.EventHandler(this.BG4ExplorerToolStripMenuItem_Click);
+			this.BG4ExplorerToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F8;
+			this.BG4ExplorerToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+			this.BG4ExplorerToolStripMenuItem.Text = "&Extract";
 			// 
-			// manageLZ11ToolStripMenuItem
+			// uMSBTToolStripMenuItem
 			// 
-			this.manageLZ11ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+			this.uMSBTToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.extractUMSBTToolStripMenuItem,
+            this.packUMSBTToolStripMenuItem});
+			this.uMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_database;
+			this.uMSBTToolStripMenuItem.Name = "uMSBTToolStripMenuItem";
+			this.uMSBTToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+			this.uMSBTToolStripMenuItem.Text = "&UMSBT";
+			// 
+			// extractUMSBTToolStripMenuItem
+			// 
+			this.extractUMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
+			this.extractUMSBTToolStripMenuItem.Name = "extractUMSBTToolStripMenuItem";
+			this.extractUMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
+			this.extractUMSBTToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+			this.extractUMSBTToolStripMenuItem.Text = "&Extract";
+			this.extractUMSBTToolStripMenuItem.Click += new System.EventHandler(this.extractUMSBTToolStripMenuItem_Click);
+			// 
+			// packUMSBTToolStripMenuItem
+			// 
+			this.packUMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_extract;
+			this.packUMSBTToolStripMenuItem.Name = "packUMSBTToolStripMenuItem";
+			this.packUMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F10;
+			this.packUMSBTToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+			this.packUMSBTToolStripMenuItem.Text = "&Pack";
+			this.packUMSBTToolStripMenuItem.Click += new System.EventHandler(this.packUMSBTToolStripMenuItem_Click);
+			// 
+			// lZ11ToolStripMenuItem
+			// 
+			this.lZ11ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.decompressToolStripMenuItem,
             this.compressToolStripMenuItem});
-			this.manageLZ11ToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_database;
-			this.manageLZ11ToolStripMenuItem.Name = "manageLZ11ToolStripMenuItem";
-			this.manageLZ11ToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.manageLZ11ToolStripMenuItem.Text = "Manage &LZ11";
+			this.lZ11ToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_database;
+			this.lZ11ToolStripMenuItem.Name = "lZ11ToolStripMenuItem";
+			this.lZ11ToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+			this.lZ11ToolStripMenuItem.Text = "&LZ11";
 			// 
 			// decompressToolStripMenuItem
 			// 
 			this.decompressToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
 			this.decompressToolStripMenuItem.Name = "decompressToolStripMenuItem";
-			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.decompressToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
 			this.decompressToolStripMenuItem.Text = "&Decompress";
 			this.decompressToolStripMenuItem.Click += new System.EventHandler(this.decompressToolStripMenuItem_Click);
 			// 
@@ -249,35 +305,9 @@
 			// 
 			this.compressToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_extract;
 			this.compressToolStripMenuItem.Name = "compressToolStripMenuItem";
-			this.compressToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.compressToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
 			this.compressToolStripMenuItem.Text = "&Compress";
 			this.compressToolStripMenuItem.Click += new System.EventHandler(this.compressToolStripMenuItem_Click);
-			// 
-			// extractUMSBTToolStripMenuItem
-			// 
-			this.extractUMSBTToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.extractToolStripMenuItem,
-            this.packToolStripMenuItem});
-			this.extractUMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_database;
-			this.extractUMSBTToolStripMenuItem.Name = "extractUMSBTToolStripMenuItem";
-			this.extractUMSBTToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-			this.extractUMSBTToolStripMenuItem.Text = "Manage &UMSBT";
-			// 
-			// extractToolStripMenuItem
-			// 
-			this.extractToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.tab_class;
-			this.extractToolStripMenuItem.Name = "extractToolStripMenuItem";
-			this.extractToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.extractToolStripMenuItem.Text = "&Extract";
-			this.extractToolStripMenuItem.Click += new System.EventHandler(this.extractToolStripMenuItem_Click);
-			// 
-			// packToolStripMenuItem
-			// 
-			this.packToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_extract;
-			this.packToolStripMenuItem.Name = "packToolStripMenuItem";
-			this.packToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.packToolStripMenuItem.Text = "&Pack";
-			this.packToolStripMenuItem.Click += new System.EventHandler(this.packToolStripMenuItem_Click);
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -293,7 +323,7 @@
 			this.aboutToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(126, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
@@ -567,14 +597,12 @@
 		  private System.Windows.Forms.TextBox txtOriginal;
 		  private System.Windows.Forms.ToolStripStatusLabel slbActions;
 		  private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem BG4ExplorerToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem CSVExportToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem exportCSVToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem findToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem extractUMSBTToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem extractToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem packToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem manageLZ11ToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem packUMSBTToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem lZ11ToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem decompressToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem compressToolStripMenuItem;
 		  private System.Windows.Forms.Button btnAddLabel;
@@ -582,9 +610,14 @@
 		  private System.Windows.Forms.TextBox txtLabelName;
 		  private System.Windows.Forms.Button btnSaveLabel;
 		  private System.Windows.Forms.ToolStripMenuItem searchDirectoryToolStripMenuItem;
-		  private System.Windows.Forms.ToolStripMenuItem xMSBTToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem uMSBTToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem xMSBTToolStripMenuItem1;
 		  private System.Windows.Forms.ToolStripMenuItem exportXMSBTToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem importXMSBTToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem batchExportXMSBTToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem batchImportXMSBTToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem bG4ToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem BG4ExplorerToolStripMenuItem;
     }
 }
 

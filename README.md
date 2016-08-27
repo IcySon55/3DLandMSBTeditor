@@ -1,5 +1,5 @@
 # MSBT Editor Reloaded
-This is a heavily modified version of Exelix11's MSBT file editor.
+I creataed this editor a while ago to support a translation project I was planning. It has since grown beyond anything I could have imagined and is now used by many in the modding community on all sorts of projects. I hope you find it useful in your own projects!
 
 ### Supported MSBT Sections
 * LBL1 - Full support
@@ -26,8 +26,9 @@ This is a heavily modified version of Exelix11's MSBT file editor.
 ### XMSBT Translation Tools
 * This is the MSBT translator's dream feature! This format allows translators to work together and collaborate on the same file(s) without losing any work due to files being overwritten or files being impossible to merge easily.
 * Export an open MSBT file to the human readable XMSBT (XML) format.
-* Import XMSBT files into an open MSBT file. Text is imported by matching the label names. Names that do not match are not imported.
-* I plan to add batch functionality for XMSBT in a later version.
+* Import XMSBT files into an open MSBT file. Text is imported by matching the label names.
+* Batch Export and Batch Import support all of the same features as the single file tools.
+* To use the batch tools, keep the MSBT and XMSBT files in the same directory. (Export does this automatically, and Import expects it.)
 
 ### Other Features
 * Find - I've added the ability to search for strings in the file making translation that much easier.
