@@ -201,7 +201,7 @@ namespace MsbtEditor
 
 			if (File.Exists && filename.Length > 0)
 			{
-				FileStream fs = System.IO.File.Open(File.FullName, FileMode.Open, FileAccess.Read, FileShare.None);
+				FileStream fs = System.IO.File.Open(File.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
 				BinaryReaderX br = new BinaryReaderX(fs);
 
 				// Initialize Members
@@ -438,10 +438,10 @@ namespace MsbtEditor
 			TXT2.OriginalStrings.Add(dstr);
 
 			Label nlbl = new Label();
-			nlbl.Length = (uint)name.Length;
+			nlbl.Length = (uint)name.Trim().Length;
 			nlbl.Name = name.Trim();
 			nlbl.Index = (uint)TXT2.Strings.IndexOf(nstr);
-			nlbl.Checksum = LabelChecksum(name);
+			nlbl.Checksum = LabelChecksum(name.Trim());
 			nlbl.String = nstr;
 			LBL1.Labels.Add(nlbl);
 
