@@ -193,6 +193,26 @@ namespace MsbtEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap menu_gbatemp {
+            get {
+                object obj = ResourceManager.GetObject("menu_gbatemp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_git {
+            get {
+                object obj = ResourceManager.GetObject("menu_git", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap menu_import {
             get {
                 object obj = ResourceManager.GetObject("menu_import", resourceCulture);
@@ -266,6 +286,16 @@ namespace MsbtEditor.Properties {
         internal static System.Drawing.Bitmap menu_up {
             get {
                 object obj = ResourceManager.GetObject("menu_up", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap menu_url {
+            get {
+                object obj = ResourceManager.GetObject("menu_url", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

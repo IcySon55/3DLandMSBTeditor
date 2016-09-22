@@ -81,9 +81,19 @@ namespace MsbtEditor
 			SaveFile(true);
 		}
 
+		private void gBATempToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start("http://gbatemp.net/threads/release-msbt-editor-reloaded.406208");
+		}
+
+		private void gitHubToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Process.Start("https://github.com/IcySon55/3DLandMSBTeditor");
+		}
+
 		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(Settings.Default.ApplicationName + "\r\nCreated by IcySon55 using Exelix11's original as a base.", "About " + Settings.Default.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(Settings.Default.ApplicationName + "\r\nCreated by IcySon55.", "About " + Settings.Default.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)

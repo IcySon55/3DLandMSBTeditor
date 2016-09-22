@@ -140,12 +140,15 @@
     <Content Include="images\menu-field-properties.png" />
     <None Include="images\menu-find.png" />
     <None Include="images\menu-import.png" />
+    <Content Include="images\menu-gbatemp.png" />
+    <Content Include="images\menu-git.png" />
     <Content Include="images\menu-new.png" />
     <Content Include="images\menu-open.png" />
     <Content Include="images\menu-paste.png" />
     <Content Include="images\menu-save-as.png" />
     <Content Include="images\menu-save.png" />
     <Content Include="images\menu-up.png" />
+    <Content Include="images\menu-url.png" />
     <Content Include="images\msbteditor.ico" />
     <None Include="images\menu-search.png" />
     <None Include="images\search.ico" />
