@@ -735,8 +735,9 @@ namespace MsbtEditor
 
 				if (!taken)
 				{
-					IEntry ent = (IEntry)lstStrings.SelectedItem;
-					ent.Value = Encoding.ASCII.GetBytes(txtLabelName.Text.Trim());
+					Label lbl = (Label)lstStrings.SelectedItem;
+					lbl.Length = (uint)Encoding.ASCII.GetBytes(txtLabelName.Text.Trim()).Length;
+					lbl.Name = txtLabelName.Text.Trim();
 					int selectedIndex = lstStrings.SelectedIndex;
 					LoadFile();
 					if (lstStrings.Items.Count > selectedIndex)
