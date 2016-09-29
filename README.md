@@ -29,6 +29,7 @@ I creataed this editor a while ago to support a translation project I was planni
 * Import XMSBT files into an open MSBT file. Text is imported by matching the label names.
 * Batch Export and Batch Import support all of the same features as the single file tools.
 * To use the batch tools, keep the MSBT and XMSBT files in the same directory. (Export does this automatically, and Import expects it.)
+* Export only the differences between two MSBT files to an XMSBT delta file using the new Export Mod feature!
 
 ### Other Features
 * Find - I've added the ability to search for strings in the file making translation that much easier.

@@ -64,6 +64,7 @@
     <Compile Include="frmSearchDirectory.Designer.cs">
       <DependentUpon>frmSearchDirectory.cs</DependentUpon>
     </Compile>
+    <Compile Include="Tools.cs" />
     <Compile Include="UMSBT.cs" />
     <Compile Include="frmBG4.cs">
       <SubType>Form</SubType>
@@ -140,6 +141,7 @@
     <Content Include="images\menu-field-properties.png" />
     <None Include="images\menu-find.png" />
     <None Include="images\menu-import.png" />
+    <Content Include="images\menu-gamebanana.png" />
     <Content Include="images\menu-gbatemp.png" />
     <Content Include="images\menu-git.png" />
     <Content Include="images\menu-new.png" />

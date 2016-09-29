@@ -157,6 +157,9 @@
   <data name="menu_find" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\menu-find.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="menu_gamebanana" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\menu-gamebanana.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="menu_gbatemp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\menu-gbatemp.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

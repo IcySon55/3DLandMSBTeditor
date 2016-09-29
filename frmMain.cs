@@ -344,6 +344,7 @@ namespace MsbtEditor
 			exportCSVToolStripMenuItem.Enabled = _fileOpen;
 			exportXMSBTToolStripMenuItem.Enabled = _fileOpen;
 			importXMSBTToolStripMenuItem.Enabled = _fileOpen;
+			exportXMSBTModToolStripMenuItem.Enabled = _fileOpen;
 
 			lstStrings.Enabled = _fileOpen;
 			txtLabelName.Enabled = _fileOpen;
@@ -638,6 +639,36 @@ namespace MsbtEditor
 						result = "There are no MSBT files that match an XMSBT file in the selected directory.";
 
 					MessageBox.Show(result, "XMSBT Batch Import Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+
+			Settings.Default.Save();
+			Settings.Default.Reload();
+		}
+
+		private void exportXMSBTModToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.Title = "Select the source MSBT File that has no changes...";
+			ofd.Filter = "MSBT Files (*.msbt)|*.msbt";
+			ofd.InitialDirectory = Settings.Default.InitialDirectory;
+
+			if (ofd.ShowDialog() == DialogResult.OK)
+			{
+				SaveFileDialog sfd = new SaveFileDialog();
+				sfd.FileName = _msbt.File.Name.Substring(0, _msbt.File.Name.Length - 4) + "xmsbt";
+				sfd.Title = "Save XMSBT As...";
+				sfd.Filter = "XMSBT (*.xmsbt)|*.xmsbt";
+				sfd.InitialDirectory = Settings.Default.XMSBTDirectory;
+				sfd.AddExtension = true;
+
+				if (sfd.ShowDialog() == DialogResult.OK)
+				{
+					Settings.Default.XMSBTDirectory = new FileInfo(sfd.FileName).DirectoryName;
+
+					string result = _msbt.ExportXMSBTMod(sfd.FileName, ofd.FileName);
+
+					MessageBox.Show(result, "XMSBT Mod Export Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
 			}
 

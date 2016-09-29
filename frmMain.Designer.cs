@@ -43,6 +43,7 @@
 			this.importXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.batchExportXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.batchImportXMSBTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportXMSBTModToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.bG4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -202,7 +203,8 @@
             this.exportXMSBTToolStripMenuItem,
             this.importXMSBTToolStripMenuItem,
             this.batchExportXMSBTToolStripMenuItem,
-            this.batchImportXMSBTToolStripMenuItem});
+            this.batchImportXMSBTToolStripMenuItem,
+            this.exportXMSBTModToolStripMenuItem});
 			this.xMSBTToolStripMenuItem1.Name = "xMSBTToolStripMenuItem1";
 			this.xMSBTToolStripMenuItem1.Size = new System.Drawing.Size(57, 20);
 			this.xMSBTToolStripMenuItem1.Text = "XMSBT";
@@ -212,7 +214,7 @@
 			this.exportXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_export;
 			this.exportXMSBTToolStripMenuItem.Name = "exportXMSBTToolStripMenuItem";
 			this.exportXMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.exportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+			this.exportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.exportXMSBTToolStripMenuItem.Text = "&Export";
 			this.exportXMSBTToolStripMenuItem.Click += new System.EventHandler(this.exportXMSBTToolStripMenuItem_Click);
 			// 
@@ -221,7 +223,7 @@
 			this.importXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_import;
 			this.importXMSBTToolStripMenuItem.Name = "importXMSBTToolStripMenuItem";
 			this.importXMSBTToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F6;
-			this.importXMSBTToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+			this.importXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.importXMSBTToolStripMenuItem.Text = "&Import";
 			this.importXMSBTToolStripMenuItem.Click += new System.EventHandler(this.importXMSBTToolStripMenuItem_Click);
 			// 
@@ -229,7 +231,7 @@
 			// 
 			this.batchExportXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_batch_export;
 			this.batchExportXMSBTToolStripMenuItem.Name = "batchExportXMSBTToolStripMenuItem";
-			this.batchExportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+			this.batchExportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.batchExportXMSBTToolStripMenuItem.Text = "Batch Export";
 			this.batchExportXMSBTToolStripMenuItem.Click += new System.EventHandler(this.batchExportXMSBTToolStripMenuItem_Click);
 			// 
@@ -237,9 +239,17 @@
 			// 
 			this.batchImportXMSBTToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_batch_import;
 			this.batchImportXMSBTToolStripMenuItem.Name = "batchImportXMSBTToolStripMenuItem";
-			this.batchImportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+			this.batchImportXMSBTToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.batchImportXMSBTToolStripMenuItem.Text = "Batch Import";
 			this.batchImportXMSBTToolStripMenuItem.Click += new System.EventHandler(this.batchImportXMSBTToolStripMenuItem_Click);
+			// 
+			// exportXMSBTModToolStripMenuItem
+			// 
+			this.exportXMSBTModToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_gamebanana;
+			this.exportXMSBTModToolStripMenuItem.Name = "exportXMSBTModToolStripMenuItem";
+			this.exportXMSBTModToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.exportXMSBTModToolStripMenuItem.Text = "Export &Mod";
+			this.exportXMSBTModToolStripMenuItem.Click += new System.EventHandler(this.exportXMSBTModToolStripMenuItem_Click);
 			// 
 			// toolsToolStripMenuItem
 			// 
@@ -346,7 +356,7 @@
 			// 
 			this.gBATempToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_gbatemp;
 			this.gBATempToolStripMenuItem.Name = "gBATempToolStripMenuItem";
-			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gBATempToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gBATempToolStripMenuItem.Text = "GBATemp";
 			this.gBATempToolStripMenuItem.Click += new System.EventHandler(this.gBATempToolStripMenuItem_Click);
 			// 
@@ -354,7 +364,7 @@
 			// 
 			this.gitHubToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_git;
 			this.gitHubToolStripMenuItem.Name = "gitHubToolStripMenuItem";
-			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.gitHubToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.gitHubToolStripMenuItem.Text = "GitHub";
 			this.gitHubToolStripMenuItem.Click += new System.EventHandler(this.gitHubToolStripMenuItem_Click);
 			// 
@@ -364,7 +374,7 @@
 			this.aboutToolStripMenuItem.Image = global::MsbtEditor.Properties.Resources.menu_about;
 			this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
 			this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.aboutToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
 			this.aboutToolStripMenuItem.Text = "&About";
 			this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
 			// 
@@ -769,6 +779,7 @@
 		  private System.Windows.Forms.ToolStripMenuItem homeThreadToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem gBATempToolStripMenuItem;
 		  private System.Windows.Forms.ToolStripMenuItem gitHubToolStripMenuItem;
+		  private System.Windows.Forms.ToolStripMenuItem exportXMSBTModToolStripMenuItem;
     }
 }
 

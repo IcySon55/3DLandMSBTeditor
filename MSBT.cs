@@ -903,5 +903,79 @@ namespace MsbtEditor
 
 			return result;
 		}
+
+		public string ExportXMSBTMod(string outFilename, string sourceFilename, bool overwrite = true)
+		{
+			string result = "Successfully exported to XMSBT.";
+
+			try
+			{
+				if (!System.IO.File.Exists(outFilename) || (System.IO.File.Exists(outFilename) && overwrite))
+				{
+					if (HasLabels)
+					{
+						XmlDocument xmlDocument = new XmlDocument();
+
+						XmlWriterSettings xmlSettings = new XmlWriterSettings();
+						xmlSettings.Encoding = FileEncoding;
+						xmlSettings.Indent = true;
+						xmlSettings.IndentChars = "\t";
+						xmlSettings.CheckCharacters = false;
+
+						XmlDeclaration xmlDeclaration = xmlDocument.CreateXmlDeclaration("1.0", FileEncoding.WebName, null);
+						xmlDocument.AppendChild(xmlDeclaration);
+
+						XmlElement xmlRoot = xmlDocument.CreateElement("xmsbt");
+						xmlDocument.AppendChild(xmlRoot);
+
+						MSBT source = new MSBT(sourceFilename);
+
+						foreach (Label lbl in LBL1.Labels)
+						{
+							bool export = true;
+
+							foreach (Label lblSource in source.LBL1.Labels)
+								if (lbl.Name == lblSource.Name && lbl.String.Value.SequenceEqual(lblSource.String.Value))
+								{
+									export = false;
+									break;
+								}
+
+							if (export)
+							{
+								XmlElement xmlEntry = xmlDocument.CreateElement("entry");
+								xmlRoot.AppendChild(xmlEntry);
+
+								XmlAttribute xmlLabelAttribute = xmlDocument.CreateAttribute("label");
+								xmlLabelAttribute.Value = lbl.Name;
+								xmlEntry.Attributes.Append(xmlLabelAttribute);
+
+								XmlElement xmlString = xmlDocument.CreateElement("text");
+								xmlString.InnerText = FileEncoding.GetString(lbl.String.Value).Replace("\n", "\r\n").TrimEnd('\0').Replace("\0", @"\0");
+								xmlEntry.AppendChild(xmlString);
+							}
+						}
+
+						System.IO.StreamWriter stream = new StreamWriter(outFilename, false, FileEncoding);
+						xmlDocument.Save(XmlWriter.Create(stream, xmlSettings));
+						stream.Close();
+					}
+					else
+					{
+						result = "XMSBT does not currently support files without an LBL1 section.";
+					}
+				}
+				else
+				{
+					result = outFilename + " already exists and overwrite was set to false.";
+				}
+			}
+			catch (Exception ex)
+			{
+				result = "Unknown Error - " + ex.Message;
+			}
+
+			return result;
+		}
 	}
 }
