@@ -38,7 +38,7 @@ I creataed this editor a while ago to support a translation project I was planni
 * BG4 Extraction - Extract files from within BG4 archives found in games like Mario & Luigi Paper Jam.
 * LZ11 De/Compression - Compress and Decompress files using LZ11. Held onto this feature from Exelix11's original version.
 * UMSBT Extraction & Packing - Extract MSBT files from UMSBT archives and repack them into UMSBT archives.
-* v0.9.7 will correct broken files that were previously broken by v0.9.6 and below. Just open the broken file and then click save to fix it.
+* v0.9.7 will correct broken files that were previously broken by v0.9.6 and v0.9.5b. Just open the broken file and then click save to fix it. Broken files created by v0.9.5 and below can not currently be fixed with the program. Contact me directly if you need your heavily modified file fixed so you don't lose any work.
 
 ### Known Issues
 * v0.8.6 - LZ11 Compression windows do not appear. Update to v0.9.0+.
