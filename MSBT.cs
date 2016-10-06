@@ -318,6 +318,19 @@ namespace MsbtEditor
 				}
 			}
 
+			// Old rename correction
+			foreach (Label lbl in LBL1.Labels)
+			{
+				uint previousChecksum = lbl.Checksum;
+				lbl.Checksum = LabelChecksum(lbl.Name);
+
+				if (previousChecksum != lbl.Checksum)
+				{
+					LBL1.Groups[(int)previousChecksum].NumberOfLabels -= 1;
+					LBL1.Groups[(int)lbl.Checksum].NumberOfLabels += 1;
+				}
+			}
+
 			if (LBL1.Labels.Count > 0)
 				HasLabels = true;
 
@@ -450,6 +463,15 @@ namespace MsbtEditor
 			TXT2.NumberOfStrings += 1;
 
 			return nlbl;
+		}
+
+		public void RenameLabel(Label lbl, string newName)
+		{
+			lbl.Length = (uint)Encoding.ASCII.GetBytes(newName.Trim()).Length;
+			lbl.Name = newName.Trim();
+			LBL1.Groups[(int)lbl.Checksum].NumberOfLabels -= 1;
+			lbl.Checksum = LabelChecksum(newName.Trim());
+			LBL1.Groups[(int)lbl.Checksum].NumberOfLabels += 1;
 		}
 
 		public void RemoveLabel(Label lbl)
