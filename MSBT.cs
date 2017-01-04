@@ -781,8 +781,8 @@ namespace MsbtEditor
 					sb.AppendLine("Label,String");
 					for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					{
-						ent = LBL1.Labels[i];
-						row.Add(ent.ToString());
+						ent = TXT2.Strings[i];
+						row.Add(LBL1.Labels[i].ToString());
 						row.Add("\"" + ent.ToString(FileEncoding).Replace("\"", "\"\"") + "\"");
 						sb.AppendLine(string.Join(",", row.ToArray()));
 						row.Clear();
