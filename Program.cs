@@ -9,10 +9,6 @@ namespace MsbtEditor
 {
 	static class Program
 	{
-		/// <summary>
-		/// Punto di ingresso principale dell'applicazione.
-		/// </summary>
-
 #if DEBUG
 		[DllImport("kernel32.dll", SetLastError = true)]
 		static extern bool AllocConsole();
