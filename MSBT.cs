@@ -781,9 +781,11 @@ namespace MsbtEditor
 					sb.AppendLine("Label,String");
 					for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					{
+						Label lbl = (Label)LBL1.Labels[i];
 						ent = LBL1.Labels[i];
+
 						row.Add(ent.ToString());
-						row.Add("\"" + ent.ToString(FileEncoding).Replace("\"", "\"\"") + "\"");
+						row.Add("\"" + lbl.String.ToString(FileEncoding).Replace("\"", "\"\"") + "\"");
 						sb.AppendLine(string.Join(",", row.ToArray()));
 						row.Clear();
 					}
@@ -793,9 +795,11 @@ namespace MsbtEditor
 					sb.AppendLine("Index,String");
 					for (int i = 0; i < TXT2.NumberOfStrings; i++)
 					{
-						ent = TXT2.Strings[i];
+						String str = (String)TXT2.Strings[i];
+						ent = LBL1.Labels[i];
+
 						row.Add((ent.Index + 1).ToString());
-						row.Add("\"" + ent.ToString(FileEncoding).Replace("\"", "\"\"") + "\"");
+						row.Add("\"" + str.ToString(FileEncoding).Replace("\"", "\"\"") + "\"");
 						sb.AppendLine(string.Join(",", row.ToArray()));
 						row.Clear();
 					}
