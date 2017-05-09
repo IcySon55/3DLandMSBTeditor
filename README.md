@@ -1,5 +1,7 @@
 # MSBT Editor Reloaded
-I creataed this editor a while ago to support a translation project I was planning. It has since grown beyond anything I could have imagined and is now used by many in the modding community on all sorts of projects. I hope you find it useful in your own projects!
+I created this editor a while ago to support a translation project I was planning; Which is now cancelled since Picross 3D 2 is slated for a North American release. It has since grown beyond anything I could have imagined and is now used by many in the modding community on all sorts of projects. I hope you find it useful in your own projects!
+
+Notice: [For a more advanced and complete MSBT solution, check out Kuriimu.](https://github.com/IcySon55/Kuriimu)
 
 ### Supported MSBT Sections
 * LBL1 - Full support
